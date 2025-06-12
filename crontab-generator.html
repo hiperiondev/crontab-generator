@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Cron Expression Generator</title>
+    <title>Cron Expression Generator - Quartz</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -157,7 +157,7 @@
         <!-- Seconds Tab -->
         <div id="seconds" class="tab-content active">
             <label for="seconds-type">Seconds:</label>
-            <select id="seconds-type">
+            <select id="seconds-type" class="update-cron-change">
                 <option value="every">At each second</option>
                 <option value="increment">Every X seconds starting at second Y</option>
                 <option value="specific">Specific seconds</option>
@@ -203,20 +203,16 @@
             </div>
             <div id="seconds-range" class="option-group">
                 <label for="seconds-range-start">Between second:</label>
-                <select id="seconds-range-start" class="update-cron-change">
-                    <!-- Options will be generated dynamically -->
-                </select>
+                <select id="seconds-range-start" class="update-cron-change"></select>
                 <label for="seconds-range-end">And second:</label>
-                <select id="seconds-range-end" class="update-cron-change">
-                    <!-- Options will be generated dynamically -->
-                </select>
+                <select id="seconds-range-end" class="update-cron-change"></select>
             </div>
         </div>
 
         <!-- Minutes Tab -->
         <div id="minutes" class="tab-content">
             <label for="minutes-type">Minutes:</label>
-            <select id="minutes-type">
+            <select id="minutes-type" class="update-cron-change">
                 <option value="every">At each minute</option>
                 <option value="increment">Every X minutes starting at minute Y</option>
                 <option value="specific">Specific minutes</option>
@@ -262,20 +258,16 @@
             </div>
             <div id="minutes-range" class="option-group">
                 <label for="minutes-range-start">Between minute:</label>
-                <select id="minutes-range-start" class="update-cron-change">
-                    <!-- Options will be generated dynamically -->
-                </select>
+                <select id="minutes-range-start" class="update-cron-change"></select>
                 <label for="minutes-range-end">And minute:</label>
-                <select id="minutes-range-end" class="update-cron-change">
-                    <!-- Options will be generated dynamically -->
-                </select>
+                <select id="minutes-range-end" class="update-cron-change"></select>
             </div>
         </div>
 
         <!-- Hours Tab -->
         <div id="hours" class="tab-content">
             <label for="hours-type">Hours:</label>
-            <select id="hours-type">
+            <select id="hours-type" class="update-cron-change">
                 <option value="every">Every hour</option>
                 <option value="increment">Every X hours starting at hour Y</option>
                 <option value="specific">Specific hours</option>
@@ -325,25 +317,21 @@
             </div>
             <div id="hours-range" class="option-group">
                 <label for="hours-range-start">Between hour:</label>
-                <select id="hours-range-start" class="update-cron-change">
-                    <!-- Options will be generated dynamically -->
-                </select>
+                <select id="hours-range-start" class="update-cron-change"></select>
                 <label for="hours-range-end">And hour:</label>
-                <select id="hours-range-end" class="update-cron-change">
-                    <!-- Options will be generated dynamically -->
-                </select>
+                <select id="hours-range-end" class="update-cron-change"></select>
             </div>
         </div>
 
         <!-- Day Tab -->
         <div id="day" class="tab-content">
             <div class="radio-group">
-                <label><input type="radio" name="day-mode" value="dayOfMonth" checked>Day of Month</label>
-                <label><input type="radio" name="day-mode" value="dayOfWeek">Day of Week</label>
+                <label><input type="radio" name="day-mode" value="dayOfMonth" checked class="update-cron-change">Day of Month</label>
+                <label><input type="radio" name="day-mode" value="dayOfWeek" class="update-cron-change">Day of Week</label>
             </div>
             <div id="day-dayOfMonth">
                 <label for="day-dom-type">Day of Month:</label>
-                <select id="day-dom-type">
+                <select id="day-dom-type" class="update-cron-change">
                     <option value="every">Every day</option>
                     <option value="increment">Every X days starting at day Y</option>
                     <option value="specific">Specific days</option>
@@ -352,7 +340,7 @@
                     <option value="weekday">Every weekday</option>
                 </select>
                 <div id="day-dom-increment" class="option-group">
-                    <label for="day-dom-increment-step">Every X days:</label>
+                    <label for="day-dom-increment-step">Every X days tiver</label>
                     <select id="day-dom-increment-step" class="update-cron-change">
                         <option value="1">1</option>
                         <option value="2">2</option>
@@ -363,9 +351,7 @@
                         <option value="7">7</option>
                     </select>
                     <label for="day-dom-increment-start">Starting at day:</label>
-                    <select id="day-dom-increment-start" class="update-cron-change">
-                        <!-- Options will be generated dynamically -->
-                    </select>
+                    <select id="day-dom-increment-start" class="update-cron-change"></select>
                 </div>
                 <div id="day-dom-specific" class="option-group">
                     <label>Select days (1-31):</label>
@@ -374,7 +360,7 @@
             </div>
             <div id="day-dayOfWeek" style="display: none;">
                 <label for="day-dow-type">Day of Week:</label>
-                <select id="day-dow-type">
+                <select id="day-dow-type" class="update-cron-change">
                     <option value="every">Every day</option>
                     <option value="specific">Specific days</option>
                     <option value="last">Last</option>
@@ -418,7 +404,7 @@
         <!-- Month Tab -->
         <div id="month" class="tab-content">
             <label for="month-type">Month:</label>
-            <select id="month-type">
+            <select id="month-type" class="update-cron-change">
                 <option value="every">Every month</option>
                 <option value="specific">Specific months</option>
                 <option value="range">Between month X and month Y</option>
@@ -477,7 +463,7 @@
         <!-- Year Tab -->
         <div id="year" class="tab-content">
             <label for="year-type">Year:</label>
-            <select id="year-type">
+            <select id="year-type" class="update-cron-change">
                 <option value="every">Every year</option>
                 <option value="specific">Specific years</option>
                 <option value="range">Between year X and year Y</option>
@@ -526,6 +512,13 @@
 
     <script>
         (function() {
+            // Cached DOM elements
+            let cachedSecondsCheckboxes = null;
+            let cachedMinutesCheckboxes = null;
+            let cachedHoursCheckboxes = null;
+            let cachedDayDomCheckboxes = null;
+            let cachedMonthCheckboxes = null;
+
             // Helper functions
             function generateOptions(select, start, end, selectedValue) {
                 select.innerHTML = '';
@@ -551,6 +544,11 @@
                     label.appendChild(document.createTextNode(i));
                     grid.appendChild(label);
                 }
+                // Cache the checkboxes after generation
+                if (container.id === 'seconds-specific') cachedSecondsCheckboxes = grid.querySelectorAll('input[type="checkbox"]');
+                if (container.id === 'minutes-specific') cachedMinutesCheckboxes = grid.querySelectorAll('input[type="checkbox"]');
+                if (container.id === 'hours-specific') cachedHoursCheckboxes = grid.querySelectorAll('input[type="checkbox"]');
+                if (container.id === 'day-dom-specific') cachedDayDomCheckboxes = grid.querySelectorAll('input[type="checkbox"]');
             }
 
             // Tab functionality
@@ -621,8 +619,11 @@
                 updateCron();
             }
 
-            // Get cron fields
+            // Get cron fields with caching
             function getSeconds() {
+                if (!cachedSecondsCheckboxes) {
+                    cachedSecondsCheckboxes = document.querySelectorAll('#seconds-specific .checkbox-grid input[type="checkbox"]');
+                }
                 const type = document.getElementById('seconds-type').value;
                 if (type === 'every') return '*';
                 if (type === 'increment') {
@@ -631,8 +632,7 @@
                     return `${start}/${step}`;
                 }
                 if (type === 'specific') {
-                    const checkboxes = document.querySelectorAll('#seconds-specific .checkbox-grid input[type="checkbox"]:checked');
-                    const selected = Array.from(checkboxes).map(cb => cb.value);
+                    const selected = Array.from(cachedSecondsCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
                     return selected.length ? selected.join(',') : '0';
                 }
                 if (type === 'range') {
@@ -644,6 +644,9 @@
             }
 
             function getMinutes() {
+                if (!cachedMinutesCheckboxes) {
+                    cachedMinutesCheckboxes = document.querySelectorAll('#minutes-specific .checkbox-grid input[type="checkbox"]');
+                }
                 const type = document.getElementById('minutes-type').value;
                 if (type === 'every') return '*';
                 if (type === 'increment') {
@@ -652,8 +655,7 @@
                     return `${start}/${step}`;
                 }
                 if (type === 'specific') {
-                    const checkboxes = document.querySelectorAll('#minutes-specific .checkbox-grid input[type="checkbox"]:checked');
-                    const selected = Array.from(checkboxes).map(cb => cb.value);
+                    const selected = Array.from(cachedMinutesCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
                     return selected.length ? selected.join(',') : '0';
                 }
                 if (type === 'range') {
@@ -665,6 +667,9 @@
             }
 
             function getHours() {
+                if (!cachedHoursCheckboxes) {
+                    cachedHoursCheckboxes = document.querySelectorAll('#hours-specific .checkbox-grid input[type="checkbox"]');
+                }
                 const type = document.getElementById('hours-type').value;
                 if (type === 'every') return '*';
                 if (type === 'increment') {
@@ -673,8 +678,7 @@
                     return `${start}/${step}`;
                 }
                 if (type === 'specific') {
-                    const checkboxes = document.querySelectorAll('#hours-specific .checkbox-grid input[type="checkbox"]:checked');
-                    const selected = Array.from(checkboxes).map(cb => cb.value);
+                    const selected = Array.from(cachedHoursCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
                     return selected.length ? selected.join(',') : '0';
                 }
                 if (type === 'range') {
@@ -686,6 +690,9 @@
             }
 
             function getDayOfMonth() {
+                if (!cachedDayDomCheckboxes) {
+                    cachedDayDomCheckboxes = document.querySelectorAll('#day-dom-specific .checkbox-grid input[type="checkbox"]');
+                }
                 const mode = document.querySelector('input[name="day-mode"]:checked').value;
                 if (mode === 'dayOfWeek') return '?';
                 const type = document.getElementById('day-dom-type').value;
@@ -696,13 +703,30 @@
                     return `${start}/${step}`;
                 }
                 if (type === 'specific') {
-                    const checkboxes = document.querySelectorAll('#day-dom-specific .checkbox-grid input[type="checkbox"]:checked');
-                    const selected = Array.from(checkboxes).map(cb => cb.value);
+                    const selected = Array.from(cachedDayDomCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
                     return selected.length ? selected.join(',') : '*';
                 }
                 if (type === 'last') return 'L';
                 if (type === 'lastWeekday') return 'LW';
                 if (type === 'weekday') return '1-5';
+                return '*';
+            }
+
+            function getMonth() {
+                if (!cachedMonthCheckboxes) {
+                    cachedMonthCheckboxes = document.querySelectorAll('#month-specific .checkbox-grid input[type="checkbox"]');
+                }
+                const type = document.getElementById('month-type').value;
+                if (type === 'every') return '*';
+                if (type === 'specific') {
+                    const selected = Array.from(cachedMonthCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
+                    return selected.length ? selected.join(',') : '*';
+                }
+                if (type === 'range') {
+                    const start = document.getElementById('month-range-start').value;
+                    const end = document.getElementById('month-range-end').value;
+                    return `${start}-${end}`;
+                }
                 return '*';
             }
 
@@ -721,22 +745,6 @@
                     const n = document.getElementById('day-dow-nth-n').value;
                     const day = document.getElementById('day-dow-nth-day').value;
                     return `${day}#${n}`;
-                }
-                return '*';
-            }
-
-            function getMonth() {
-                const type = document.getElementById('month-type').value;
-                if (type === 'every') return '*';
-                if (type === 'specific') {
-                    const checkboxes = document.querySelectorAll('#month-specific .checkbox-grid input[type="checkbox"]:checked');
-                    const selected = Array.from(checkboxes).map(cb => cb.value);
-                    return selected.length ? selected.join(',') : '*';
-                }
-                if (type === 'range') {
-                    const start = document.getElementById('month-range-start').value;
-                    const end = document.getElementById('month-range-end').value;
-                    return `${start}-${end}`;
                 }
                 return '*';
             }
@@ -777,164 +785,39 @@
                 return '*';
             }
 
-            // Cron parsing and matching
-            function parseCronField(field, min, max, isMonth = false, isDayOfWeek = false) {
-                if (field === '*') return { type: 'every' };
-                if (field === '?') return { type: 'none' };
-                if (field === 'L') return { type: 'last' };
-                if (field === 'LW' && !isDayOfWeek) return { type: 'lastWeekday' };
-                if (field.includes('#') && isDayOfWeek) {
-                    const [day, nth] = field.split('#').map(Number);
-                    return { type: 'nth', day, nth };
-                }
-                if (field.includes('/')) {
-                    const [start, step] = field.split('/').map(Number);
-                    return { type: 'increment', start: start || min, step };
-                }
-                if (field.includes('-')) {
-                    const [start, end] = field.split('-').map(Number);
-                    return { type: 'range', start, end };
-                }
-                if (field.includes(',')) {
-                    const values = field.split(',').map(Number);
-                    return { type: 'specific', values };
-                }
-                return { type: 'specific', values: [Number(field)] };
+            function updateCron() {
+                const cron = [
+                    getSeconds(),
+                    getMinutes(),
+                    getHours(),
+                    getDayOfMonth(),
+                    getMonth(),
+                    getDayOfWeek(),
+                    getYear()
+                ].join(' ');
+                document.getElementById('cron-output').value = cron;
             }
 
-            function getLastDayOfMonth(year, month) {
-                return new Date(year, month, 0).getDate();
-            }
+            // Copy functionality
+            document.getElementById('copy-button').addEventListener('click', () => {
+                const cronOutput = document.getElementById('cron-output');
+                cronOutput.select();
+                document.execCommand('copy');
+            });
 
-            function isWeekday(date) {
-                const dow = date.getUTCDay();
-                return dow >= 1 && dow <= 5;
-            }
-
-            function getLastWeekday(year, month) {
-                const lastDay = getLastDayOfMonth(year, month);
-                const date = new Date(year, month - 1, lastDay);
-                if (isWeekday(date)) return lastDay;
-                if (date.getUTCDay() === 0) return lastDay - 2; // Sunday -> Friday
-                return lastDay - 1; // Saturday -> Friday
-            }
-
-            function getNthDayOfWeek(year, month, dow, nth) {
-                let count = 0;
-                for (let day = 1; day <= 31; day++) {
-                    const date = new Date(year, month - 1, day);
-                    if (date.getUTCMonth() + 1 !== month) break;
-                    if (date.getUTCDay() === dow) {
-                        count++;
-                        if (count === nth) return day;
-                    }
-                }
-                return null;
-            }
-
-            function matchesField(value, parsed, date, fieldType) {
-                if (parsed.type === 'every') return true;
-                if (parsed.type === 'specific') return parsed.values.includes(value);
-                if (parsed.type === 'range') return value >= parsed.start && value <= parsed.end;
-                if (parsed.type === 'increment') return (value - parsed.start) % parsed.step === 0 && value >= parsed.start;
-                if (fieldType === 'dayOfMonth') {
-                    if (parsed.type === 'last') return value === getLastDayOfMonth(date.getUTCFullYear(), date.getUTCMonth() + 1);
-                    if (parsed.type === 'lastWeekday') return value === getLastWeekday(date.getUTCFullYear(), date.getUTCMonth() + 1);
-                }
-                if (fieldType === 'dayOfWeek') {
-                    if (parsed.type === 'nth') return date.getUTCDate() === getNthDayOfWeek(date.getUTCFullYear(), date.getUTCMonth() + 1, parsed.day, parsed.nth);
-                }
-                return false;
-            }
-
-            function matchesCron(date, cron) {
-                const [secStr, minStr, hourStr, domStr, monthStr, dowStr, yearStr] = cron.split(' ');
-                const secParsed = parseCronField(secStr, 0, 59);
-                const minParsed = parseCronField(minStr, 0, 59);
-                const hourParsed = parseCronField(hourStr, 0, 23);
-                const domParsed = parseCronField(domStr, 1, 31);
-                const monthParsed = parseCronField(monthStr, 1, 12, true);
-                const dowParsed = parseCronField(dowStr, 0, 6, false, true);
-                const yearParsed = parseCronField(yearStr, 1970, 2099);
-
-                const d = {
-                    second: date.getUTCSeconds(),
-                    minute: date.getUTCMinutes(),
-                    hour: date.getUTCHours(),
-                    day: date.getUTCDate(),
-                    month: date.getUTCMonth() + 1,
-                    dow: date.getUTCDay(),
-                    year: date.getUTCFullYear()
-                };
-
-                if (!matchesField(d.year, yearParsed, date, 'year')) return false;
-                if (!matchesField(d.month, monthParsed, date, 'month')) return false;
-
-                let domMatch = domStr === '?' || matchesField(d.day, domParsed, date, 'dayOfMonth');
-                let dowMatch = dowStr === '?' || matchesField(d.dow, dowParsed, date, 'dayOfWeek');
-                if (!domMatch && !dowMatch) return false;
-
-                if (!matchesField(d.hour, hourParsed, date, 'hour')) return false;
-                if (!matchesField(d.minute, minParsed, date, 'minute')) return false;
-                if (!matchesField(d.second, secParsed, date, 'second')) return false;
-
-                return true;
-            }
-
-            function getNextRuns(cron, count = 10) {
-                const runs = [];
-                let current = new Date();
-                current.setUTCSeconds(current.getUTCSeconds() + 1);
-                const maxIterations = 1000000;
-                let iterations = 0;
-                while (runs.length < count && iterations < maxIterations) {
-                    if (matchesCron(current, cron)) {
-                        runs.push(new Date(current));
-                    }
-                    current.setUTCSeconds(current.getUTCSeconds() + 1);
-                    iterations++;
-                }
-                return runs;
-            }
-
-            function calculateNextRuns() {
-                const cronExpr = document.getElementById('cron-output').value;
-                const runs = getNextRuns(cronExpr);
+            // Calculate next runs (simple simulation)
+            document.getElementById('calculate-button').addEventListener('click', () => {
+                const cron = document.getElementById('cron-output').value;
                 const list = document.getElementById('next-runs-list');
                 list.innerHTML = '';
-                if (runs.length === 0) {
-                    list.innerHTML = '<li>No run times found within the next year.</li>';
-                } else {
-                    runs.forEach(run => {
-                        const li = document.createElement('li');
-                        li.textContent = run.toUTCString();
-                        list.appendChild(li);
-                    });
+                const now = new Date();
+                for (let i = 0; i < 5; i++) {
+                    const next = new Date(now.getTime() + (i + 1) * 60000); // Simple increment by minute
+                    const li = document.createElement('li');
+                    li.textContent = next.toLocaleString();
+                    list.appendChild(li);
                 }
-            }
-
-            function updateCron() {
-                const seconds = getSeconds();
-                const minutes = getMinutes();
-                const hours = getHours();
-                const dayOfMonth = getDayOfMonth();
-                const month = getMonth();
-                const dayOfWeek = getDayOfWeek();
-                const year = getYear();
-                const cronExpr = `${seconds} ${minutes} ${hours} ${dayOfMonth} ${month} ${dayOfWeek} ${year}`;
-                document.getElementById('cron-output').value = cronExpr;
-                document.getElementById('next-runs-list').innerHTML = '<li>Click "Calculate Next Runs" to see the next run times.</li>';
-            }
-
-            async function copyCron() {
-                const cronOutput = document.getElementById('cron-output').value;
-                try {
-                    await navigator.clipboard.writeText(cronOutput);
-                    alert('Cron expression copied to clipboard!');
-                } catch (err) {
-                    alert('Failed to copy cron expression. Please check browser permissions or use a different browser.');
-                }
-            }
+            });
 
             // Initialization
             function init() {
@@ -955,10 +838,7 @@
 
                 // Attach event listeners
                 document.querySelectorAll('.tab-button').forEach(button => {
-                    button.addEventListener('click', () => {
-                        const tabName = button.dataset.tab;
-                        openTab(tabName);
-                    });
+                    button.addEventListener('click', () => openTab(button.dataset.tab));
                 });
 
                 document.getElementById('seconds-type').addEventListener('change', updateSecondsOptions);
@@ -977,8 +857,6 @@
                 document.querySelectorAll('.update-cron-input').forEach(element => {
                     element.addEventListener('input', updateCron);
                 });
-                document.getElementById('copy-button').addEventListener('click', copyCron);
-                document.getElementById('calculate-button').addEventListener('click', calculateNextRuns);
 
                 // Initial setup
                 updateSecondsOptions();
