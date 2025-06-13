@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cron Expression Generator - Quartz</title>
+    <title>Cron Expression Generator</title>
     <style>
         body {
             font-family: Verdana, Arial, sans-serif;
@@ -28,27 +28,10 @@
             border-top-left-radius: 5px;
             border-top-right-radius: 5px;
         }
-        #header h1 {
-            font-family: Verdana, Arial, sans-serif;
-            font-size: 24px;
-            font-weight: bold;
-            color: #0066CC;
-            margin: 20px 0;
-            text-align: center;
-        }
         #nav {
             background-color: #E6E6E6;
             padding: 10px 20px;
             border-bottom: 1px solid #CCCCCC;
-        }
-        #nav a {
-            color: #0066CC;
-            text-decoration: none;
-            margin-right: 15px;
-            font-size: 12px;
-        }
-        #nav a:hover {
-            text-decoration: underline;
         }
         #content {
             padding: 20px;
@@ -175,6 +158,12 @@
         button:hover {
             background-color: #0055AA;
         }
+        #mode-switch {
+            background-color: #4CAF50;
+        }
+        #mode-switch:hover {
+            background-color: #45a049;
+        }
         #next-runs {
             margin-top: 20px;
         }
@@ -209,27 +198,19 @@
             font-size: 11px;
             color: #666666;
         }
-        #footer a {
-            color: #0066CC;
-            text-decoration: none;
-        }
-        #footer a:hover {
-            text-decoration: underline;
-        }
     </style>
 </head>
 <body>
     <div id="container">
-        <div id="header">
-            <!-- Header content can be empty or include a logo -->
-        </div>
-        <div id="nav">
-           <!-- Menu -->
-        </div>
+        <div id="header"></div>
+        <div id="nav"></div>
         <div id="content">
             <div id="cron-generator">
-                <h2>Cron Expression Generator - Quartz</h2>
-                <div class="tabs">
+                <h2>Cron Expression Generator</h2>
+                <div style="margin-bottom: 20px;">
+                    <button id="mode-switch">Switch to Linux Crontab</button>
+                </div>
+                <div class="tabs" id="tabs">
                     <button class="tab-button active" data-tab="seconds">Seconds</button>
                     <button class="tab-button" data-tab="minutes">Minutes</button>
                     <button class="tab-button" data-tab="hours">Hours</button>
@@ -527,9 +508,7 @@
                 </div>
             </div>
         </div>
-        <div id="footer">
-             <!-- Footer -->
-        </div>
+        <div id="footer"></div>
     </div>
 
     <script>
@@ -543,6 +522,9 @@
         let selectedDaysOfMonth = [];
         let selectedMonths = [];
         let selectedDaysOfWeek = [];
+
+        // Mode flag: 'quartz' or 'linux'
+        let currentMode = 'quartz';
 
         // Generate options for select elements
         function generateOptions(select, start, end, selectedValue) {
@@ -631,52 +613,93 @@
             updateOptions('year', 'year-type', ['specific', 'range']);
         }
 
+        // Toggle between Quartz and Linux modes
+        function toggleMode() {
+            const modeSwitch = document.getElementById('mode-switch');
+            const tabs = document.getElementById('tabs');
+            const secondsTab = document.getElementById('seconds');
+            const yearTab = document.getElementById('year');
+            const secondsTabButton = document.querySelector('.tab-button[data-tab="seconds"]');
+            const yearTabButton = document.querySelector('.tab-button[data-tab="year"]');
+            if (currentMode === 'quartz') {
+                currentMode = 'linux';
+                modeSwitch.textContent = 'Switch to Quartz Scheduler';
+                secondsTab.style.display = 'none';
+                yearTab.style.display = 'none';
+                secondsTabButton.style.display = 'none';
+                yearTabButton.style.display = 'none';
+                openTab('minutes');
+            } else {
+                currentMode = 'quartz';
+                modeSwitch.textContent = 'Switch to Linux Crontab';
+                secondsTab.style.display = 'block';
+                yearTab.style.display = 'block';
+                secondsTabButton.style.display = 'inline-block';
+                yearTabButton.style.display = 'inline-block';
+                openTab('seconds');
+            }
+            updateCron();
+        }
+
         // Get cron field values
-        function getFieldValue(tab, selectedValues) {
+        function getFieldValue(tab, selectedValues, defaultValue = '*') {
             const type = document.getElementById(`${tab}-type`).value;
             if (type === 'every') return '*';
             if (type === 'increment') {
                 const start = document.getElementById(`${tab}-increment-start`).value;
                 const step = document.getElementById(`${tab}-increment-step`).value;
-                return `${start}/${step}`;
+                return currentMode === 'linux' && tab === 'day-dom' ? `*/${step}` : `${start}/${step}`;
             }
             if (type === 'specific') {
-                return selectedValues.length ? selectedValues.join(',') : (tab === 'day-dom' ? '*' : '0');
+                return selectedValues.length ? selectedValues.join(',') : defaultValue;
             }
             if (type === 'range') {
                 const start = document.getElementById(`${tab}-range-start`).value;
                 const end = document.getElementById(`${tab}-range-end`).value;
                 return `${start}-${end}`;
             }
-            return tab === 'day-dom' ? '*' : '0';
+            return defaultValue;
         }
 
-        function getSeconds() { return getFieldValue('seconds', selectedSeconds); }
-        function getMinutes() { return getFieldValue('minutes', selectedMinutes); }
-        function getHours() { return getFieldValue('hours', selectedHours); }
+        function getSeconds() {
+            if (currentMode === 'linux') return '';
+            return getFieldValue('seconds', selectedSeconds, '0');
+        }
+
+        function getMinutes() {
+            return getFieldValue('minutes', selectedMinutes);
+        }
+
+        function getHours() {
+            return getFieldValue('hours', selectedHours);
+        }
 
         function getDaysOfMonth() {
             const mode = document.querySelector('input[name="day-mode"]:checked').value;
-            if (mode === 'dayOfWeek') return '?';
+            if (mode === 'dayOfWeek') return currentMode === 'linux' ? '*' : '?';
             const type = document.getElementById('day-dom-type').value;
             if (type === 'every') return '*';
             if (type === 'increment' || type === 'specific') return getFieldValue('day-dom', selectedDaysOfMonth);
-            if (type === 'last') return 'L';
-            if (type === 'lastWeekday') return 'LW';
-            if (type === 'weekday') return '1-5';
+            if (type === 'last') return currentMode === 'linux' ? '*' : 'L';
+            if (type === 'lastWeekday') return currentMode === 'linux' ? '*' : 'LW';
+            if (type === 'weekday') return currentMode === 'linux' ? '1-5' : '1-5';
             return '*';
         }
 
         function getDaysOfWeek() {
             const mode = document.querySelector('input[name="day-mode"]:checked').value;
-            if (mode === 'dayOfMonth') return '?';
+            if (mode === 'dayOfMonth') return currentMode === 'linux' ? '*' : '?';
             const type = document.getElementById('day-dow-type').value;
             if (type === 'every') return '*';
             if (type === 'specific') {
-                return selectedDaysOfWeek.length ? selectedDaysOfWeek.join(',') : '*';
+                return selectedDaysOfWeek.length ?
+                    (currentMode === 'linux' ?
+                        selectedDaysOfWeek.map(d => (parseInt(d) + 1) % 7).join(',') :
+                        selectedDaysOfWeek.join(',')) : '*';
             }
-            if (type === 'last') return 'L';
+            if (type === 'last') return currentMode === 'linux' ? '*' : 'L';
             if (type === 'nth') {
+                if (currentMode === 'linux') return '*';
                 const n = document.getElementById('day-dow-nth-n').value;
                 const day = document.getElementById('day-dow-nth-day').value;
                 return `${day}#${n}`;
@@ -699,6 +722,7 @@
         }
 
         function getYear() {
+            if (currentMode === 'linux') return '';
             const type = document.getElementById('year-type').value;
             const errorElement = document.getElementById('year-specific-error');
             errorElement.style.display = 'none';
@@ -731,15 +755,26 @@
         function updateCron() {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
-                const cron = [
-                    getSeconds(),
-                    getMinutes(),
-                    getHours(),
-                    getDaysOfMonth(),
-                    getMonths(),
-                    getDaysOfWeek(),
-                    getYear()
-                ].join(' ');
+                let cron;
+                if (currentMode === 'quartz') {
+                    cron = [
+                        getSeconds(),
+                        getMinutes(),
+                        getHours(),
+                        getDaysOfMonth(),
+                        getMonths(),
+                        getDaysOfWeek(),
+                        getYear()
+                    ].join(' ');
+                } else {
+                    cron = [
+                        getMinutes(),
+                        getHours(),
+                        getDaysOfMonth(),
+                        getMonths(),
+                        getDaysOfWeek()
+                    ].join(' ');
+                }
                 document.getElementById('cron-output').value = cron;
             }, 300);
         }
@@ -770,6 +805,9 @@
                 list.appendChild(li);
             }
         });
+
+        // Mode switch listener
+        document.getElementById('mode-switch').addEventListener('click', toggleMode);
 
         // Initialization
         function init() {
