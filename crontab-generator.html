@@ -335,6 +335,8 @@
                             <option value="specific">Specific days</option>
                             <option value="last">Last day of month</option>
                             <option value="lastWeekday">Last weekday of month</option>
+                            <option value="secondLast">Second to last day of month</option>
+                            <option value="nearestWeekday">Nearest weekday to day X</option>
                             <option value="weekday">Every weekday</option>
                         </select>
                         <div id="day-dom-increment" class="option-group">
@@ -355,26 +357,43 @@
                             <label>Select days (1-31):</label>
                             <div class="checkbox-grid" id="day-dom-specific-grid"></div>
                         </div>
+                        <div id="day-dom-nearestWeekday" class="option-group">
+                            <label for="day-dom-nearestWeekday-day">Nearest weekday to day:</label>
+                            <select id="day-dom-nearestWeekday-day"></select>
+                        </div>
                     </div>
                     <div id="day-dayOfWeek" style="display: none;">
                         <label for="day-dow-type">Day of Week:</label>
                         <select id="day-dow-type">
                             <option value="every">Every day</option>
                             <option value="specific">Specific days</option>
-                            <option value="last">Last</option>
-                            <option value="nth">Nth day</option>
+                            <option value="weekday">Every weekday</option>
+                            <option value="last">Last [day] of month</option>
+                            <option value="nth">Nth [day] of month</option>
                         </select>
                         <div id="day-dow-specific" class="option-group">
-                            <label>Select days (0-6, 0=Sunday):</label>
+                            <label>Select days (1-7, 1=Sunday):</label>
                             <div class="checkbox-grid" id="day-dow-specific-grid">
-                                <label><input type="checkbox" value="0">Sun (0)</label>
-                                <label><input type="checkbox" value="1">Mon (1)</label>
-                                <label><input type="checkbox" value="2">Tue (2)</label>
-                                <label><input type="checkbox" value="3">Wed (3)</label>
-                                <label><input type="checkbox" value="4">Thu (4)</label>
-                                <label><input type="checkbox" value="5">Fri (5)</label>
-                                <label><input type="checkbox" value="6">Sat (6)</label>
+                                <label><input type="checkbox" value="1">Sun (1)</label>
+                                <label><input type="checkbox" value="2">Mon (2)</label>
+                                <label><input type="checkbox" value="3">Tue (3)</label>
+                                <label><input type="checkbox" value="4">Wed (4)</label>
+                                <label><input type="checkbox" value="5">Thu (5)</label>
+                                <label><input type="checkbox" value="6">Fri (6)</label>
+                                <label><input type="checkbox" value="7">Sat (7)</label>
                             </div>
+                        </div>
+                        <div id="day-dow-last" class="option-group">
+                            <label for="day-dow-last-day">Last:</label>
+                            <select id="day-dow-last-day">
+                                <option value="1">Sunday</option>
+                                <option value="2">Monday</option>
+                                <option value="3">Tuesday</option>
+                                <option value="4">Wednesday</option>
+                                <option value="5">Thursday</option>
+                                <option value="6">Friday</option>
+                                <option value="7">Saturday</option>
+                            </select>
                         </div>
                         <div id="day-dow-nth" class="option-group">
                             <label for="day-dow-nth-n">Nth:</label>
@@ -387,13 +406,13 @@
                             </select>
                             <label for="day-dow-nth-day">Day:</label>
                             <select id="day-dow-nth-day">
-                                <option value="0">Sunday</option>
-                                <option value="1">Monday</option>
-                                <option value="2">Tuesday</option>
-                                <option value="3">Wednesday</option>
-                                <option value="4">Thursday</option>
-                                <option value="5">Friday</option>
-                                <option value="6">Saturday</option>
+                                <option value="1">Sunday</option>
+                                <option value="2">Monday</option>
+                                <option value="3">Tuesday</option>
+                                <option value="4">Wednesday</option>
+                                <option value="5">Thursday</option>
+                                <option value="6">Friday</option>
+                                <option value="7">Saturday</option>
                             </select>
                         </div>
                     </div>
@@ -539,7 +558,7 @@
         }
 
         // Generate checkboxes and cache them
-        function generateCheckboxes(containerId, start, end) {
+        function generateCheckboxes(containerId, start, end, labelText = null) {
             const grid = document.getElementById(containerId + '-grid');
             grid.innerHTML = '';
             for (let i = start; i <= end; i++) {
@@ -548,7 +567,7 @@
                 checkbox.type = 'checkbox';
                 checkbox.value = i;
                 label.appendChild(checkbox);
-                label.appendChild(document.createTextNode(i));
+                label.appendChild(document.createTextNode(labelText ? labelText(i) : i));
                 grid.appendChild(label);
             }
             checkboxCache[containerId + '-grid'] = grid.querySelectorAll('input[type="checkbox"]');
@@ -556,12 +575,16 @@
 
         // Tab switching
         function openTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+                tab.style.display = 'none';
+            });
             document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
             const tabContent = document.getElementById(tabName);
             const tabButton = document.querySelector(`.tab-button[data-tab="${tabName}"]`);
             if (tabContent && tabButton) {
                 tabContent.classList.add('active');
+                tabContent.style.display = 'block';
                 tabButton.classList.add('active');
             }
         }
@@ -571,9 +594,8 @@
             const type = document.getElementById(typeId).value;
             groups.forEach(group => {
                 const element = document.getElementById(`${tab}-${group}`);
-                element.style.display = (type === group) ? 'block' : 'none';
+                if (element) element.style.display = (type === group) ? 'block' : 'none';
             });
-            updateCron();
         }
 
         function updateSecondsOptions() {
@@ -593,15 +615,14 @@
             document.getElementById('day-dayOfMonth').style.display = mode === 'dayOfMonth' ? 'block' : 'none';
             document.getElementById('day-dayOfWeek').style.display = mode === 'dayOfWeek' ? 'block' : 'none';
             updateDaySubOptions();
-            updateCron();
         }
 
         function updateDaySubOptions() {
             const mode = document.querySelector('input[name="day-mode"]:checked').value;
             if (mode === 'dayOfMonth') {
-                updateOptions('day-dom', 'day-dom-type', ['increment', 'specific']);
+                updateOptions('day-dom', 'day-dom-type', ['increment', 'specific', 'nearestWeekday']);
             } else {
-                updateOptions('day-dow', 'day-dow-type', ['specific', 'nth']);
+                updateOptions('day-dow', 'day-dow-type', ['specific', 'last', 'nth']);
             }
         }
 
@@ -613,31 +634,100 @@
             updateOptions('year', 'year-type', ['specific', 'range']);
         }
 
+        // Reset all form elements to initial state
+        function resetForm(isQuartz) {
+            // Clear selected values
+            selectedSeconds = [];
+            selectedMinutes = [];
+            selectedHours = [];
+            selectedDaysOfMonth = [];
+            selectedMonths = [];
+            selectedDaysOfWeek = [];
+
+            // Reset select elements
+            ['seconds-type', 'minutes-type', 'hours-type', 'day-dom-type', 'day-dow-type', 'month-type', 'year-type'].forEach(id => {
+                const select = document.getElementById(id);
+                if (select) select.value = 'every';
+            });
+
+            // Reset specific select elements to default values
+            const defaults = {
+                'seconds-increment-step': '1',
+                'minutes-increment-step': '1',
+                'hours-increment-step': '1',
+                'day-dom-increment-step': '1',
+                'month-range-end': '12',
+                'year-range-start': '2025',
+                'year-range-end': '2030',
+                'day-dow-nth-n': '1',
+                'day-dow-nth-day': '1',
+                'day-dow-last-day': '1',
+                'day-dom-nearestWeekday-day': '1'
+            };
+            Object.keys(defaults).forEach(id => {
+                const select = document.getElementById(id);
+                if (select) select.value = defaults[id];
+            });
+
+            // Repopulate dynamic select options
+            generateOptions(document.getElementById('seconds-increment-start'), 0, 59, 0);
+            generateOptions(document.getElementById('seconds-range-start'), 0, 59, 0);
+            generateOptions(document.getElementById('seconds-range-end'), 1, 59, 59);
+            generateOptions(document.getElementById('minutes-increment-start'), 0, 59, 0);
+            generateOptions(document.getElementById('minutes-range-start'), 0, 59, 0);
+            generateOptions(document.getElementById('minutes-range-end'), 1, 59, 59);
+            generateOptions(document.getElementById('hours-increment-start'), 0, 23, 0);
+            generateOptions(document.getElementById('hours-range-start'), 0, 23, 0);
+            generateOptions(document.getElementById('hours-range-end'), 1, 23, 23);
+            generateOptions(document.getElementById('day-dom-increment-start'), 1, 31, 1);
+            generateOptions(document.getElementById('day-dom-nearestWeekday-day'), 1, 31, 1);
+
+            // Reset checkboxes
+            Object.values(checkboxCache).forEach(checkboxes => {
+                checkboxes.forEach(cb => cb.checked = false);
+            });
+            document.querySelectorAll('#month-specific-grid input[type="checkbox"]').forEach(cb => cb.checked = false);
+            document.querySelectorAll('#day-dow-specific-grid input[type="checkbox"]').forEach(cb => cb.checked = false);
+
+            // Reset radio buttons
+            document.querySelector('input[name="day-mode"][value="dayOfMonth"]').checked = true;
+
+            // Reset text input
+            document.getElementById('year-specific-input').value = '';
+
+            // Reset error messages
+            document.getElementById('year-specific-error').style.display = 'none';
+
+            // Reset next runs list
+            document.getElementById('next-runs-list').innerHTML = '';
+
+            // Update option visibility
+            updateSecondsOptions();
+            updateMinutesOptions();
+            updateHoursOptions();
+            updateDayOptions();
+            updateMonthOptions();
+            updateYearOptions();
+
+            // Set active tab
+            const tabToOpen = isQuartz ? 'seconds' : 'minutes';
+            openTab(tabToOpen);
+
+            // Ensure tab button visibility
+            document.querySelector('.tab-button[data-tab="seconds"]').style.display = isQuartz ? 'inline-block' : 'none';
+            document.querySelector('.tab-button[data-tab="year"]').style.display = isQuartz ? 'inline-block' : 'none';
+        }
+
         // Toggle between Quartz and Linux modes
         function toggleMode() {
+            currentMode = currentMode === 'quartz' ? 'linux' : 'quartz';
             const modeSwitch = document.getElementById('mode-switch');
-            const tabs = document.getElementById('tabs');
-            const secondsTab = document.getElementById('seconds');
-            const yearTab = document.getElementById('year');
-            const secondsTabButton = document.querySelector('.tab-button[data-tab="seconds"]');
-            const yearTabButton = document.querySelector('.tab-button[data-tab="year"]');
-            if (currentMode === 'quartz') {
-                currentMode = 'linux';
-                modeSwitch.textContent = 'Switch to Quartz Scheduler';
-                secondsTab.style.display = 'none';
-                yearTab.style.display = 'none';
-                secondsTabButton.style.display = 'none';
-                yearTabButton.style.display = 'none';
-                openTab('minutes');
-            } else {
-                currentMode = 'quartz';
-                modeSwitch.textContent = 'Switch to Linux Crontab';
-                secondsTab.style.display = 'block';
-                yearTab.style.display = 'block';
-                secondsTabButton.style.display = 'inline-block';
-                yearTabButton.style.display = 'inline-block';
-                openTab('seconds');
-            }
+            modeSwitch.textContent = currentMode === 'quartz' ? 'Switch to Linux Crontab' : 'Switch to Quartz Scheduler';
+
+            // Reset form to initial state for the current mode
+            resetForm(currentMode === 'quartz');
+
+            // Update cron expression
             updateCron();
         }
 
@@ -680,9 +770,14 @@
             const type = document.getElementById('day-dom-type').value;
             if (type === 'every') return '*';
             if (type === 'increment' || type === 'specific') return getFieldValue('day-dom', selectedDaysOfMonth);
-            if (type === 'last') return currentMode === 'linux' ? '*' : 'L';
-            if (type === 'lastWeekday') return currentMode === 'linux' ? '*' : 'LW';
-            if (type === 'weekday') return currentMode === 'linux' ? '1-5' : '1-5';
+            if (type === 'last') return 'L';
+            if (type === 'lastWeekday') return 'LW';
+            if (type === 'secondLast') return 'L-1';
+            if (type === 'nearestWeekday') {
+                const day = document.getElementById('day-dom-nearestWeekday-day').value;
+                return `${day}W`;
+            }
+            if (type === 'weekday') return currentMode === 'linux' ? '1-5' : 'MON-FRI';
             return '*';
         }
 
@@ -694,10 +789,14 @@
             if (type === 'specific') {
                 return selectedDaysOfWeek.length ?
                     (currentMode === 'linux' ?
-                        selectedDaysOfWeek.map(d => (parseInt(d) + 1) % 7).join(',') :
+                        selectedDaysOfWeek.map(d => (parseInt(d) % 7)).join(',') :
                         selectedDaysOfWeek.join(',')) : '*';
             }
-            if (type === 'last') return currentMode === 'linux' ? '*' : 'L';
+            if (type === 'weekday') return currentMode === 'linux' ? '1-5' : 'MON-FRI';
+            if (type === 'last') {
+                const day = document.getElementById('day-dow-last-day').value;
+                return currentMode === 'linux' ? '*' : `${day}L`;
+            }
             if (type === 'nth') {
                 if (currentMode === 'linux') return '*';
                 const n = document.getElementById('day-dow-nth-n').value;
@@ -780,38 +879,114 @@
         }
 
         // Copy to clipboard
-        document.getElementById('copy-button').addEventListener('click', () => {
-            const cronOutput = document.getElementById('cron-output');
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(cronOutput.value)
-                    .then(() => alert('Cron expression copied to clipboard!'))
-                    .catch(() => alert('Failed to copy cron expression.'));
-            } else {
-                cronOutput.select();
-                document.execCommand('copy');
-                alert('Cron expression copied to clipboard!');
-            }
-        });
+        function setupCopyButton() {
+            document.getElementById('copy-button').addEventListener('click', () => {
+                const cronOutput = document.getElementById('cron-output');
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(cronOutput.value)
+                        .then(() => alert('Cron expression copied to clipboard!'))
+                        .catch(() => alert('Failed to copy cron expression.'));
+                } else {
+                    cronOutput.select();
+                    document.execCommand('copy');
+                    alert('Cron expression copied to clipboard!');
+                }
+            });
+        }
 
         // Simulate next runs
-        document.getElementById('calculate-button').addEventListener('click', () => {
-            const list = document.getElementById('next-runs-list');
-            list.innerHTML = '';
-            const now = new Date();
-            for (let i = 0; i < 5; i++) {
-                const next = new Date(now.getTime() + (i + 1) * 60000);
-                const li = document.createElement('li');
-                li.textContent = next.toLocaleString();
-                list.appendChild(li);
-            }
-        });
+        function setupCalculateButton() {
+            document.getElementById('calculate-button').addEventListener('click', () => {
+                const list = document.getElementById('next-runs-list');
+                list.innerHTML = '';
+                const now = new Date();
+                for (let i = 0; i < 5; i++) {
+                    const next = new Date(now.getTime() + (i + 1) * 60000);
+                    const li = document.createElement('li');
+                    li.textContent = next.toLocaleString();
+                    list.appendChild(li);
+                }
+            });
+        }
 
-        // Mode switch listener
-        document.getElementById('mode-switch').addEventListener('click', toggleMode);
+        // Setup event listeners
+        function setupEventListeners() {
+            // Tab buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabName = button.getAttribute('data-tab');
+                    openTab(tabName);
+                });
+            });
+
+            // Mode switch
+            document.getElementById('mode-switch').addEventListener('click', toggleMode);
+
+            // Select type changes
+            document.getElementById('seconds-type').addEventListener('change', () => { updateSecondsOptions(); updateCron(); });
+            document.getElementById('minutes-type').addEventListener('change', () => { updateMinutesOptions(); updateCron(); });
+            document.getElementById('hours-type').addEventListener('change', () => { updateHoursOptions(); updateCron(); });
+            document.getElementById('day-dom-type').addEventListener('change', () => { updateDaySubOptions(); updateCron(); });
+            document.getElementById('day-dow-type').addEventListener('change', () => { updateDaySubOptions(); updateCron(); });
+            document.getElementById('month-type').addEventListener('change', () => { updateMonthOptions(); updateCron(); });
+            document.getElementById('year-type').addEventListener('change', () => { updateYearOptions(); updateCron(); });
+
+            // Day mode radio buttons
+            document.querySelectorAll('input[name="day-mode"]').forEach(radio => {
+                radio.addEventListener('change', () => { updateDayOptions(); updateCron(); });
+            });
+
+            // Other select elements
+            document.querySelectorAll('select:not([id$="-type"])').forEach(select => {
+                select.addEventListener('change', updateCron);
+            });
+
+            // Year-specific input
+            document.getElementById('year-specific-input').addEventListener('input', updateCron);
+
+            // Checkbox listeners
+            ['seconds-specific', 'minutes-specific', 'hours-specific', 'day-dom-specific'].forEach(id => {
+                if (checkboxCache[`${id}-grid`]) {
+                    checkboxCache[`${id}-grid`].forEach(cb => {
+                        cb.addEventListener('change', () => {
+                            const selectedArray = {
+                                'seconds-specific': selectedSeconds,
+                                'minutes-specific': selectedMinutes,
+                                'hours-specific': selectedHours,
+                                'day-dom-specific': selectedDaysOfMonth
+                            }[id];
+                            selectedArray.length = 0;
+                            checkboxCache[`${id}-grid`].forEach(cb => {
+                                if (cb.checked) selectedArray.push(cb.value);
+                            });
+                            updateCron();
+                        });
+                    });
+                }
+            });
+
+            document.querySelectorAll('#month-specific-grid input[type="checkbox"]').forEach(cb => {
+                cb.addEventListener('change', () => {
+                    selectedMonths = Array.from(document.querySelectorAll('#month-specific-grid input[type="checkbox"]'))
+                        .filter(cb => cb.checked)
+                        .map(cb => cb.value);
+                    updateCron();
+                });
+            });
+
+            document.querySelectorAll('#day-dow-specific-grid input[type="checkbox"]').forEach(cb => {
+                cb.addEventListener('change', () => {
+                    selectedDaysOfWeek = Array.from(document.querySelectorAll('#day-dow-specific-grid input[type="checkbox"]'))
+                        .filter(cb => cb.checked)
+                        .map(cb => cb.value);
+                    updateCron();
+                });
+            });
+        }
 
         // Initialization
         function init() {
-            // Populate select options
+            // Generate select options
             generateOptions(document.getElementById('seconds-increment-start'), 0, 59, 0);
             generateOptions(document.getElementById('seconds-range-start'), 0, 59, 0);
             generateOptions(document.getElementById('seconds-range-end'), 1, 59, 59);
@@ -822,6 +997,7 @@
             generateOptions(document.getElementById('hours-range-start'), 0, 23, 0);
             generateOptions(document.getElementById('hours-range-end'), 1, 23, 23);
             generateOptions(document.getElementById('day-dom-increment-start'), 1, 31, 1);
+            generateOptions(document.getElementById('day-dom-nearestWeekday-day'), 1, 31, 1);
 
             // Generate checkboxes
             generateCheckboxes('seconds-specific', 0, 59);
@@ -829,91 +1005,17 @@
             generateCheckboxes('hours-specific', 0, 23);
             generateCheckboxes('day-dom-specific', 1, 31);
 
-            // Add change listeners for checkboxes
-            checkboxCache['seconds-specific-grid'].forEach(cb => {
-                cb.addEventListener('change', () => {
-                    selectedSeconds = Array.from(checkboxCache['seconds-specific-grid'])
-                        .filter(cb => cb.checked)
-                        .map(cb => cb.value);
-                    updateCron();
-                });
-            });
-            checkboxCache['minutes-specific-grid'].forEach(cb => {
-                cb.addEventListener('change', () => {
-                    selectedMinutes = Array.from(checkboxCache['minutes-specific-grid'])
-                        .filter(cb => cb.checked)
-                        .map(cb => cb.value);
-                    updateCron();
-                });
-            });
-            checkboxCache['hours-specific-grid'].forEach(cb => {
-                cb.addEventListener('change', () => {
-                    selectedHours = Array.from(checkboxCache['hours-specific-grid'])
-                        .filter(cb => cb.checked)
-                        .map(cb => cb.value);
-                    updateCron();
-                });
-            });
-            checkboxCache['day-dom-specific-grid'].forEach(cb => {
-                cb.addEventListener('change', () => {
-                    selectedDaysOfMonth = Array.from(checkboxCache['day-dom-specific-grid'])
-                        .filter(cb => cb.checked)
-                        .map(cb => cb.value);
-                    updateCron();
-                });
-            });
-            document.querySelectorAll('#month-specific-grid input[type="checkbox"]').forEach(cb => {
-                cb.addEventListener('change', () => {
-                    selectedMonths = Array.from(document.querySelectorAll('#month-specific-grid input[type="checkbox"]'))
-                        .filter(cb => cb.checked)
-                        .map(cb => cb.value);
-                    updateCron();
-                });
-            });
-            document.querySelectorAll('#day-dow-specific-grid input[type="checkbox"]').forEach(cb => {
-                cb.addEventListener('change', () => {
-                    selectedDaysOfWeek = Array.from(document.querySelectorAll('#day-dow-specific-grid input[type="checkbox"]'))
-                        .filter(cb => cb.checked)
-                        .map(cb => cb.value);
-                    updateCron();
-                });
-            });
+            // Setup buttons
+            setupCopyButton();
+            setupCalculateButton();
 
-            // Event listeners for tab buttons
-            document.querySelectorAll('.tab-button').forEach(button => {
-                button.addEventListener('click', () => {
-                    const tabName = button.getAttribute('data-tab');
-                    openTab(tabName);
-                });
-            });
+            // Setup event listeners
+            setupEventListeners();
 
-            // Event listeners for option changes
-            document.getElementById('seconds-type').addEventListener('change', updateSecondsOptions);
-            document.getElementById('minutes-type').addEventListener('change', updateMinutesOptions);
-            document.getElementById('hours-type').addEventListener('change', updateHoursOptions);
-            document.getElementById('day-dom-type').addEventListener('change', updateDaySubOptions);
-            document.getElementById('day-dow-type').addEventListener('change', updateDaySubOptions);
-            document.getElementById('month-type').addEventListener('change', updateMonthOptions);
-            document.getElementById('year-type').addEventListener('change', updateYearOptions);
-            document.querySelectorAll('input[name="day-mode"]').forEach(radio => {
-                radio.addEventListener('change', updateDayOptions);
-            });
+            // Initial reset to Quartz mode
+            resetForm(true);
 
-            // Add change listeners for select elements
-            document.querySelectorAll('select').forEach(select => {
-                select.addEventListener('change', updateCron);
-            });
-
-            // Add input listener for year-specific input
-            document.getElementById('year-specific-input').addEventListener('input', updateCron);
-
-            // Initial setup
-            updateSecondsOptions();
-            updateMinutesOptions();
-            updateHoursOptions();
-            updateDayOptions();
-            updateMonthOptions();
-            updateYearOptions();
+            // Initial cron update
             updateCron();
         }
 
