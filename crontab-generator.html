@@ -208,19 +208,19 @@
             <div id="cron-generator">
                 <h2>Cron Expression Generator</h2>
                 <div style="margin-bottom: 20px;">
-                    <button id="mode-switch">Switch to Linux Crontab</button>
+                    <button id="mode-switch">Switch to Quartz Scheduler</button>
                 </div>
                 <div class="tabs" id="tabs">
-                    <button class="tab-button active" data-tab="seconds">Seconds</button>
-                    <button class="tab-button" data-tab="minutes">Minutes</button>
+                    <button class="tab-button" data-tab="seconds" style="display: none;">Seconds</button>
+                    <button class="tab-button active" data-tab="minutes">Minutes</button>
                     <button class="tab-button" data-tab="hours">Hours</button>
                     <button class="tab-button" data-tab="day">Day</button>
                     <button class="tab-button" data-tab="month">Month</button>
-                    <button class="tab-button" data-tab="year">Year</button>
+                    <button class="tab-button" data-tab="year" style="display: none;">Year</button>
                 </div>
 
                 <!-- Seconds Tab -->
-                <div id="seconds" class="tab-content active">
+                <div id="seconds" class="tab-content">
                     <label for="seconds-type">Seconds:</label>
                     <select id="seconds-type">
                         <option value="every">At each second</option>
@@ -254,7 +254,7 @@
                 </div>
 
                 <!-- Minutes Tab -->
-                <div id="minutes" class="tab-content">
+                <div id="minutes" class="tab-content active">
                     <label for="minutes-type">Minutes:</label>
                     <select id="minutes-type">
                         <option value="every">At each minute</option>
@@ -372,27 +372,27 @@
                             <option value="nth">Nth [day] of month</option>
                         </select>
                         <div id="day-dow-specific" class="option-group">
-                            <label>Select days (1-7, 1=Sunday):</label>
+                            <label>Select days (0-6, 0=Sunday):</label>
                             <div class="checkbox-grid" id="day-dow-specific-grid">
-                                <label><input type="checkbox" value="1">Sun (1)</label>
-                                <label><input type="checkbox" value="2">Mon (2)</label>
-                                <label><input type="checkbox" value="3">Tue (3)</label>
-                                <label><input type="checkbox" value="4">Wed (4)</label>
-                                <label><input type="checkbox" value="5">Thu (5)</label>
-                                <label><input type="checkbox" value="6">Fri (6)</label>
-                                <label><input type="checkbox" value="7">Sat (7)</label>
+                                <label><input type="checkbox" value="0">Sun (0)</label>
+                                <label><input type="checkbox" value="1">Mon (1)</label>
+                                <label><input type="checkbox" value="2">Tue (2)</label>
+                                <label><input type="checkbox" value="3">Wed (3)</label>
+                                <label><input type="checkbox" value="4">Thu (4)</label>
+                                <label><input type="checkbox" value="5">Fri (5)</label>
+                                <label><input type="checkbox" value="6">Sat (6)</label>
                             </div>
                         </div>
                         <div id="day-dow-last" class="option-group">
                             <label for="day-dow-last-day">Last:</label>
                             <select id="day-dow-last-day">
-                                <option value="1">Sunday</option>
-                                <option value="2">Monday</option>
-                                <option value="3">Tuesday</option>
-                                <option value="4">Wednesday</option>
-                                <option value="5">Thursday</option>
-                                <option value="6">Friday</option>
-                                <option value="7">Saturday</option>
+                                <option value="0">Sunday</option>
+                                <option value="1">Monday</option>
+                                <option value="2">Tuesday</option>
+                                <option value="3">Wednesday</option>
+                                <option value="4">Thursday</option>
+                                <option value="5">Friday</option>
+                                <option value="6">Saturday</option>
                             </select>
                         </div>
                         <div id="day-dow-nth" class="option-group">
@@ -406,13 +406,13 @@
                             </select>
                             <label for="day-dow-nth-day">Day:</label>
                             <select id="day-dow-nth-day">
-                                <option value="1">Sunday</option>
-                                <option value="2">Monday</option>
-                                <option value="3">Tuesday</option>
-                                <option value="4">Wednesday</option>
-                                <option value="5">Thursday</option>
-                                <option value="6">Friday</option>
-                                <option value="7">Saturday</option>
+                                <option value="0">Sunday</option>
+                                <option value="1">Monday</option>
+                                <option value="2">Tuesday</option>
+                                <option value="3">Wednesday</option>
+                                <option value="4">Thursday</option>
+                                <option value="5">Friday</option>
+                                <option value="6">Saturday</option>
                             </select>
                         </div>
                     </div>
@@ -542,8 +542,8 @@
         let selectedMonths = [];
         let selectedDaysOfWeek = [];
 
-        // Mode flag: 'quartz' or 'linux'
-        let currentMode = 'quartz';
+        // Mode flag: 'quartz' or 'linux', starting in Linux mode
+        let currentMode = 'linux';
 
         // Generate options for select elements
         function generateOptions(select, start, end, selectedValue) {
@@ -660,8 +660,8 @@
                 'year-range-start': '2025',
                 'year-range-end': '2030',
                 'day-dow-nth-n': '1',
-                'day-dow-nth-day': '1',
-                'day-dow-last-day': '1',
+                'day-dow-nth-day': '0',
+                'day-dow-last-day': '0',
                 'day-dom-nearestWeekday-day': '1'
             };
             Object.keys(defaults).forEach(id => {
@@ -770,12 +770,12 @@
             const type = document.getElementById('day-dom-type').value;
             if (type === 'every') return '*';
             if (type === 'increment' || type === 'specific') return getFieldValue('day-dom', selectedDaysOfMonth);
-            if (type === 'last') return 'L';
-            if (type === 'lastWeekday') return 'LW';
-            if (type === 'secondLast') return 'L-1';
+            if (type === 'last') return currentMode === 'linux' ? '*' : 'L';
+            if (type === 'lastWeekday') return currentMode === 'linux' ? '*' : 'LW';
+            if (type === 'secondLast') return currentMode === 'linux' ? '*' : 'L-1';
             if (type === 'nearestWeekday') {
                 const day = document.getElementById('day-dom-nearestWeekday-day').value;
-                return `${day}W`;
+                return currentMode === 'linux' ? '*' : `${day}W`;
             }
             if (type === 'weekday') return currentMode === 'linux' ? '1-5' : 'MON-FRI';
             return '*';
@@ -789,7 +789,7 @@
             if (type === 'specific') {
                 return selectedDaysOfWeek.length ?
                     (currentMode === 'linux' ?
-                        selectedDaysOfWeek.map(d => (parseInt(d) % 7)).join(',') :
+                        selectedDaysOfWeek.map(d => (parseInt(d) + 1) % 7).join(',') :
                         selectedDaysOfWeek.join(',')) : '*';
             }
             if (type === 'weekday') return currentMode === 'linux' ? '1-5' : 'MON-FRI';
@@ -1012,8 +1012,8 @@
             // Setup event listeners
             setupEventListeners();
 
-            // Initial reset to Quartz mode
-            resetForm(true);
+            // Initial reset to Linux mode
+            resetForm(false);
 
             // Initial cron update
             updateCron();
