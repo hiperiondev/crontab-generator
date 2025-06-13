@@ -2,61 +2,107 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cron Expression Generator - Quartz</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: Verdana, Arial, sans-serif;
+            font-size: 12px;
+            color: #333333;
+            background-color: #F6F6F6;
             margin: 0;
+            padding: 0;
+        }
+        #container {
+            width: 960px;
+            margin: 0 auto;
+            background-color: #FFFFFF;
+            border: 1px solid #CCCCCC;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        #header {
+            background-color: #0066CC;
+            color: #FFFFFF;
+            padding: 10px 20px;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+        #header h1 {
+            font-family: Verdana, Arial, sans-serif;
+            font-size: 24px;
+            font-weight: bold;
+            color: #0066CC;
+            margin: 20px 0;
+            text-align: center;
+        }
+        #nav {
+            background-color: #E6E6E6;
+            padding: 10px 20px;
+            border-bottom: 1px solid #CCCCCC;
+        }
+        #nav a {
+            color: #0066CC;
+            text-decoration: none;
+            margin-right: 15px;
+            font-size: 12px;
+        }
+        #nav a:hover {
+            text-decoration: underline;
+        }
+        #content {
             padding: 20px;
-            background-color: #f5f5f5;
+            min-height: 400px;
         }
         #cron-generator {
             max-width: 900px;
             margin: 0 auto;
-            background-color: #fff;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         h2 {
-            color: #333;
-            margin-top: 0;
+            font-family: Verdana, Arial, sans-serif;
+            font-size: 24px;
+            font-weight: bold;
+            color: #0066CC;
+            margin: 0 0 20px 0;
+            text-align: left;
         }
-        p {
-            color: #666;
+        h3 {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333333;
+            margin: 20px 0 10px 0;
         }
         .tabs {
             overflow: hidden;
-            border-bottom: 2px solid #007bff;
+            border-bottom: 2px solid #0066CC;
             margin-bottom: 20px;
         }
         .tab-button {
-            background-color: #f8f9fa;
+            background-color: #E6E6E6;
             float: left;
-            border: 1px solid #ddd;
+            border: 1px solid #CCCCCC;
             border-bottom: none;
             outline: none;
             cursor: pointer;
-            padding: 10px 20px;
-            transition: 0.3s;
-            font-size: 14px;
+            padding: 8px 15px;
+            font-size: 12px;
             margin-right: 5px;
             border-radius: 5px 5px 0 0;
         }
         .tab-button:hover {
-            background-color: #e9ecef;
+            background-color: #D9D9D9;
         }
         .tab-button.active {
-            background-color: #007bff;
-            color: #fff;
+            background-color: #0066CC;
+            color: #FFFFFF;
+            border-color: #0066CC;
         }
         .tab-content {
             display: none;
-            padding: 20px;
-            border: 1px solid #ddd;
+            padding: 15px;
+            border: 1px solid #CCCCCC;
             border-top: none;
-            background-color: #fafafa;
+            background-color: #F9F9F9;
         }
         .tab-content.active {
             display: block;
@@ -66,13 +112,18 @@
             margin-right: 10px;
             display: inline-block;
             width: 250px;
+            font-size: 12px;
+            color: #333333;
         }
         select, input[type="text"] {
             padding: 5px;
             margin: 5px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            border: 1px solid #CCCCCC;
+            border-radius: 3px;
             width: 150px;
+            font-size: 12px;
+            font-family: Verdana, Arial, sans-serif;
+            background-color: #FFFFFF;
         }
         .option-group {
             margin-top: 10px;
@@ -80,17 +131,24 @@
         }
         .checkbox-grid {
             display: grid;
-            gap: 5px;
+            grid-template-columns: repeat(15, 1fr);
+            gap: 2px;
+            padding: 5px;
             margin-top: 5px;
-            max-height: 150px;
+            max-height: 80px;
             overflow-y: auto;
-        }
-        #month-specific .checkbox-grid {
-            grid-template-columns: repeat(3, 1fr);
         }
         .checkbox-grid label {
             width: auto;
             font-weight: normal;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            font-size: 10px;
+            color: #333333;
+        }
+        .checkbox-grid label input[type="checkbox"] {
+            margin-right: 2px;
         }
         #cron-expression {
             margin-top: 20px;
@@ -98,22 +156,24 @@
         #cron-output {
             width: 70%;
             padding: 8px;
-            font-family: monospace;
-            background-color: #e9ecef;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            background-color: #E6E6E6;
+            border: 1px solid #CCCCCC;
+            border-radius: 3px;
         }
-        #cron-expression button, #next-runs button {
+        button {
             padding: 8px 15px;
-            background-color: #28a745;
-            color: #fff;
+            background-color: #0066CC;
+            color: #FFFFFF;
             border: none;
-            border-radius: 4px;
+            border-radius: 3px;
             cursor: pointer;
+            font-size: 12px;
             margin-left: 10px;
         }
-        #cron-expression button:hover, #next-runs button:hover {
-            background-color: #218838;
+        button:hover {
+            background-color: #0055AA;
         }
         #next-runs {
             margin-top: 20px;
@@ -124,7 +184,8 @@
         }
         #next-runs-list li {
             padding: 5px 0;
-            color: #555;
+            color: #333333;
+            font-size: 12px;
         }
         .radio-group {
             margin: 10px 0;
@@ -132,744 +193,694 @@
         .radio-group label {
             width: auto;
             margin-right: 20px;
+            font-weight: normal;
         }
         .error-message {
-            color: #dc3545;
-            font-size: 12px;
+            color: #CC0000;
+            font-size: 11px;
             margin-left: 260px;
             display: none;
+        }
+        #footer {
+            background-color: #E6E6E6;
+            padding: 10px 20px;
+            border-top: 1px solid #CCCCCC;
+            text-align: center;
+            font-size: 11px;
+            color: #666666;
+        }
+        #footer a {
+            color: #0066CC;
+            text-decoration: none;
+        }
+        #footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <div id="cron-generator">
-        <h2>Cron Expression Generator</h2>
-
-        <div class="tabs">
-            <button class="tab-button active" data-tab="seconds">Seconds</button>
-            <button class="tab-button" data-tab="minutes">Minutes</button>
-            <button class="tab-button" data-tab="hours">Hours</button>
-            <button class="tab-button" data-tab="day">Day</button>
-            <button class="tab-button" data-tab="month">Month</button>
-            <button class="tab-button" data-tab="year">Year</button>
+    <div id="container">
+        <div id="header">
+            <!-- Header content can be empty or include a logo -->
         </div>
-
-        <!-- Seconds Tab -->
-        <div id="seconds" class="tab-content active">
-            <label for="seconds-type">Seconds:</label>
-            <select id="seconds-type" class="update-cron-change">
-                <option value="every">At each second</option>
-                <option value="increment">Every X seconds starting at second Y</option>
-                <option value="specific">Specific seconds</option>
-                <option value="range">Between second X and second Y</option>
-            </select>
-            <div id="seconds-increment" class="option-group">
-                <label for="seconds-increment-step">Every X seconds:</label>
-                <select id="seconds-increment-step" class="update-cron-change">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="5">5</option>
-                    <option value="10">10</option>
-                    <option value="15">15</option>
-                    <option value="30">30</option>
-                </select>
-                <label for="seconds-increment-start">Starting at second:</label>
-                <select id="seconds-increment-start" class="update-cron-change">
-                    <option value="0">0</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                    <option value="15">15</option>
-                    <option value="20">20</option>
-                    <option value="25">25</option>
-                    <option value="30">30</option>
-                    <option value="35">35</option>
-                    <option value="40">40</option>
-                    <option value="45">45</option>
-                    <option value="50">50</option>
-                    <option value="55">55</option>
-                </select>
-            </div>
-            <div id="seconds-specific" class="option-group">
-                <label>Select seconds (0-59):</label>
-                <div class="checkbox-grid" style="grid-template-columns: repeat(6, 1fr);"></div>
-            </div>
-            <div id="seconds-range" class="option-group">
-                <label for="seconds-range-start">Between second:</label>
-                <select id="seconds-range-start" class="update-cron-change"></select>
-                <label for="seconds-range-end">And second:</label>
-                <select id="seconds-range-end" class="update-cron-change"></select>
-            </div>
+        <div id="nav">
+           <!-- Menu -->
         </div>
+        <div id="content">
+            <div id="cron-generator">
+                <h2>Cron Expression Generator - Quartz</h2>
+                <div class="tabs">
+                    <button class="tab-button active" data-tab="seconds">Seconds</button>
+                    <button class="tab-button" data-tab="minutes">Minutes</button>
+                    <button class="tab-button" data-tab="hours">Hours</button>
+                    <button class="tab-button" data-tab="day">Day</button>
+                    <button class="tab-button" data-tab="month">Month</button>
+                    <button class="tab-button" data-tab="year">Year</button>
+                </div>
 
-        <!-- Minutes Tab -->
-        <div id="minutes" class="tab-content">
-            <label for="minutes-type">Minutes:</label>
-            <select id="minutes-type" class="update-cron-change">
-                <option value="every">At each minute</option>
-                <option value="increment">Every X minutes starting at minute Y</option>
-                <option value="specific">Specific minutes</option>
-                <option value="range">Between minute X and minute Y</option>
-            </select>
-            <div id="minutes-increment" class="option-group">
-                <label for="minutes-increment-step">Every X minutes:</label>
-                <select id="minutes-increment-step" class="update-cron-change">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="5">5</option>
-                    <option value="10">10</option>
-                    <option value="15">15</option>
-                    <option value="30">30</option>
-                </select>
-                <label for="minutes-increment-start">Starting at minute:</label>
-                <select id="minutes-increment-start" class="update-cron-change">
-                    <option value="0">0</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                    <option value="15">15</option>
-                    <option value="20">20</option>
-                    <option value="25">25</option>
-                    <option value="30">30</option>
-                    <option value="35">35</option>
-                    <option value="40">40</option>
-                    <option value="45">45</option>
-                    <option value="50">50</option>
-                    <option value="55">55</option>
-                </select>
-            </div>
-            <div id="minutes-specific" class="option-group">
-                <label>Select minutes (0-59):</label>
-                <div class="checkbox-grid" style="grid-template-columns: repeat(6, 1fr);"></div>
-            </div>
-            <div id="minutes-range" class="option-group">
-                <label for="minutes-range-start">Between minute:</label>
-                <select id="minutes-range-start" class="update-cron-change"></select>
-                <label for="minutes-range-end">And minute:</label>
-                <select id="minutes-range-end" class="update-cron-change"></select>
-            </div>
-        </div>
-
-        <!-- Hours Tab -->
-        <div id="hours" class="tab-content">
-            <label for="hours-type">Hours:</label>
-            <select id="hours-type" class="update-cron-change">
-                <option value="every">Every hour</option>
-                <option value="increment">Every X hours starting at hour Y</option>
-                <option value="specific">Specific hours</option>
-                <option value="range">Between hour X and hour Y</option>
-            </select>
-            <div id="hours-increment" class="option-group">
-                <label for="hours-increment-step">Every X hours:</label>
-                <select id="hours-increment-step" class="update-cron-change">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="6">6</option>
-                    <option value="12">12</option>
-                </select>
-                <label for="hours-increment-start">Starting at hour:</label>
-                <select id="hours-increment-start" class="update-cron-change">
-                    <option value="0">0</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                    <option value="11">11</option>
-                    <option value="12">12</option>
-                    <option value="13">13</option>
-                    <option value="14">14</option>
-                    <option value="15">15</option>
-                    <option value="16">16</option>
-                    <option value="17">17</option>
-                    <option value="18">18</option>
-                    <option value="19">19</option>
-                    <option value="20">20</option>
-                    <option value="21">21</option>
-                    <option value="22">22</option>
-                    <option value="23">23</option>
-                </select>
-            </div>
-            <div id="hours-specific" class="option-group">
-                <label>Select hours (0-23):</label>
-                <div class="checkbox-grid" style="grid-template-columns: repeat(6, 1fr);"></div>
-            </div>
-            <div id="hours-range" class="option-group">
-                <label for="hours-range-start">Between hour:</label>
-                <select id="hours-range-start" class="update-cron-change"></select>
-                <label for="hours-range-end">And hour:</label>
-                <select id="hours-range-end" class="update-cron-change"></select>
-            </div>
-        </div>
-
-        <!-- Day Tab -->
-        <div id="day" class="tab-content">
-            <div class="radio-group">
-                <label><input type="radio" name="day-mode" value="dayOfMonth" checked class="update-cron-change">Day of Month</label>
-                <label><input type="radio" name="day-mode" value="dayOfWeek" class="update-cron-change">Day of Week</label>
-            </div>
-            <div id="day-dayOfMonth">
-                <label for="day-dom-type">Day of Month:</label>
-                <select id="day-dom-type" class="update-cron-change">
-                    <option value="every">Every day</option>
-                    <option value="increment">Every X days starting at day Y</option>
-                    <option value="specific">Specific days</option>
-                    <option value="last">Last day of month</option>
-                    <option value="lastWeekday">Last weekday of month</option>
-                    <option value="weekday">Every weekday</option>
-                </select>
-                <div id="day-dom-increment" class="option-group">
-                    <label for="day-dom-increment-step">Every X days tiver</label>
-                    <select id="day-dom-increment-step" class="update-cron-change">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
+                <!-- Seconds Tab -->
+                <div id="seconds" class="tab-content active">
+                    <label for="seconds-type">Seconds:</label>
+                    <select id="seconds-type">
+                        <option value="every">At each second</option>
+                        <option value="increment">Every X seconds starting at second Y</option>
+                        <option value="specific">Specific seconds</option>
+                        <option value="range">Between second X and second Y</option>
                     </select>
-                    <label for="day-dom-increment-start">Starting at day:</label>
-                    <select id="day-dom-increment-start" class="update-cron-change"></select>
-                </div>
-                <div id="day-dom-specific" class="option-group">
-                    <label>Select days (1-31):</label>
-                    <div class="checkbox-grid" style="grid-template-columns: repeat(6, 1fr);"></div>
-                </div>
-            </div>
-            <div id="day-dayOfWeek" style="display: none;">
-                <label for="day-dow-type">Day of Week:</label>
-                <select id="day-dow-type" class="update-cron-change">
-                    <option value="every">Every day</option>
-                    <option value="specific">Specific days</option>
-                    <option value="last">Last</option>
-                    <option value="nth">nth day</option>
-                </select>
-                <div id="day-dow-specific" class="option-group">
-                    <label>Select days (0-6, 0=Sunday):</label>
-                    <div class="checkbox-grid" style="grid-template-columns: repeat(4, 1fr);">
-                        <label><input type="checkbox" value="0" class="update-cron-change">Sun (0)</label>
-                        <label><input type="checkbox" value="1" class="update-cron-change">Mon (1)</label>
-                        <label><input type="checkbox" value="2" class="update-cron-change">Tue (2)</label>
-                        <label><input type="checkbox" value="3" class="update-cron-change">Wed (3)</label>
-                        <label><input type="checkbox" value="4" class="update-cron-change">Thu (4)</label>
-                        <label><input type="checkbox" value="5" class="update-cron-change">Fri (5)</label>
-                        <label><input type="checkbox" value="6" class="update-cron-change">Sat (6)</label>
+                    <div id="seconds-increment" class="option-group">
+                        <label for="seconds-increment-step">Every X seconds:</label>
+                        <select id="seconds-increment-step">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                            <option value="30">30</option>
+                        </select>
+                        <label for="seconds-increment-start">Starting at second:</label>
+                        <select id="seconds-increment-start"></select>
+                    </div>
+                    <div id="seconds-specific" class="option-group">
+                        <label>Select seconds (0-59):</label>
+                        <div class="checkbox-grid" id="seconds-specific-grid"></div>
+                    </div>
+                    <div id="seconds-range" class="option-group">
+                        <label for="seconds-range-start">Between second:</label>
+                        <select id="seconds-range-start"></select>
+                        <label for="seconds-range-end">And second:</label>
+                        <select id="seconds-range-end"></select>
                     </div>
                 </div>
-                <div id="day-dow-nth" class="option-group">
-                    <label for="day-dow-nth-n">Nth:</label>
-                    <select id="day-dow-nth-n" class="update-cron-change">
-                        <option value="1">1st</option>
-                        <option value="2">2nd</option>
-                        <option value="3">3rd</option>
-                        <option value="4">4th</option>
-                        <option value="5">5th</option>
+
+                <!-- Minutes Tab -->
+                <div id="minutes" class="tab-content">
+                    <label for="minutes-type">Minutes:</label>
+                    <select id="minutes-type">
+                        <option value="every">At each minute</option>
+                        <option value="increment">Every X minutes starting at minute Y</option>
+                        <option value="specific">Specific minutes</option>
+                        <option value="range">Between minute X and minute Y</option>
                     </select>
-                    <label for="day-dow-nth-day">Day:</label>
-                    <select id="day-dow-nth-day" class="update-cron-change">
-                        <option value="0">Sunday</option>
-                        <option value="1">Monday</option>
-                        <option value="2">Tuesday</option>
-                        <option value="3">Wednesday</option>
-                        <option value="4">Thursday</option>
-                        <option value="5">Friday</option>
-                        <option value="6">Saturday</option>
+                    <div id="minutes-increment" class="option-group">
+                        <label for="minutes-increment-step">Every X minutes:</label>
+                        <select id="minutes-increment-step">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                            <option value="30">30</option>
+                        </select>
+                        <label for="minutes-increment-start">Starting at minute:</label>
+                        <select id="minutes-increment-start"></select>
+                    </div>
+                    <div id="minutes-specific" class="option-group">
+                        <label>Select minutes (0-59):</label>
+                        <div class="checkbox-grid" id="minutes-specific-grid"></div>
+                    </div>
+                    <div id="minutes-range" class="option-group">
+                        <label for="minutes-range-start">Between minute:</label>
+                        <select id="minutes-range-start"></select>
+                        <label for="minutes-range-end">And minute:</label>
+                        <select id="minutes-range-end"></select>
+                    </div>
+                </div>
+
+                <!-- Hours Tab -->
+                <div id="hours" class="tab-content">
+                    <label for="hours-type">Hours:</label>
+                    <select id="hours-type">
+                        <option value="every">Every hour</option>
+                        <option value="increment">Every X hours starting at hour Y</option>
+                        <option value="specific">Specific hours</option>
+                        <option value="range">Between hour X and hour Y</option>
                     </select>
+                    <div id="hours-increment" class="option-group">
+                        <label for="hours-increment-step">Every X hours:</label>
+                        <select id="hours-increment-step">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="6">6</option>
+                            <option value="12">12</option>
+                        </select>
+                        <label for="hours-increment-start">Starting at hour:</label>
+                        <select id="hours-increment-start"></select>
+                    </div>
+                    <div id="hours-specific" class="option-group">
+                        <label>Select hours (0-23):</label>
+                        <div class="checkbox-grid" id="hours-specific-grid"></div>
+                    </div>
+                    <div id="hours-range" class="option-group">
+                        <label for="hours-range-start">Between hour:</label>
+                        <select id="hours-range-start"></select>
+                        <label for="hours-range-end">And hour:</label>
+                        <select id="hours-range-end"></select>
+                    </div>
+                </div>
+
+                <!-- Day Tab -->
+                <div id="day" class="tab-content">
+                    <div class="radio-group">
+                        <label><input type="radio" name="day-mode" value="dayOfMonth" checked>Day of Month</label>
+                        <label><input type="radio" name="day-mode" value="dayOfWeek">Day of Week</label>
+                    </div>
+                    <div id="day-dayOfMonth">
+                        <label for="day-dom-type">Day of Month:</label>
+                        <select id="day-dom-type">
+                            <option value="every">Every day</option>
+                            <option value="increment">Every X days starting at day Y</option>
+                            <option value="specific">Specific days</option>
+                            <option value="last">Last day of month</option>
+                            <option value="lastWeekday">Last weekday of month</option>
+                            <option value="weekday">Every weekday</option>
+                        </select>
+                        <div id="day-dom-increment" class="option-group">
+                            <label for="day-dom-increment-step">Every X days:</label>
+                            <select id="day-dom-increment-step">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                            </select>
+                            <label for="day-dom-increment-start">Starting at day:</label>
+                            <select id="day-dom-increment-start"></select>
+                        </div>
+                        <div id="day-dom-specific" class="option-group">
+                            <label>Select days (1-31):</label>
+                            <div class="checkbox-grid" id="day-dom-specific-grid"></div>
+                        </div>
+                    </div>
+                    <div id="day-dayOfWeek" style="display: none;">
+                        <label for="day-dow-type">Day of Week:</label>
+                        <select id="day-dow-type">
+                            <option value="every">Every day</option>
+                            <option value="specific">Specific days</option>
+                            <option value="last">Last</option>
+                            <option value="nth">Nth day</option>
+                        </select>
+                        <div id="day-dow-specific" class="option-group">
+                            <label>Select days (0-6, 0=Sunday):</label>
+                            <div class="checkbox-grid" id="day-dow-specific-grid">
+                                <label><input type="checkbox" value="0">Sun (0)</label>
+                                <label><input type="checkbox" value="1">Mon (1)</label>
+                                <label><input type="checkbox" value="2">Tue (2)</label>
+                                <label><input type="checkbox" value="3">Wed (3)</label>
+                                <label><input type="checkbox" value="4">Thu (4)</label>
+                                <label><input type="checkbox" value="5">Fri (5)</label>
+                                <label><input type="checkbox" value="6">Sat (6)</label>
+                            </div>
+                        </div>
+                        <div id="day-dow-nth" class="option-group">
+                            <label for="day-dow-nth-n">Nth:</label>
+                            <select id="day-dow-nth-n">
+                                <option value="1">1st</option>
+                                <option value="2">2nd</option>
+                                <option value="3">3rd</option>
+                                <option value="4">4th</option>
+                                <option value="5">5th</option>
+                            </select>
+                            <label for="day-dow-nth-day">Day:</label>
+                            <select id="day-dow-nth-day">
+                                <option value="0">Sunday</option>
+                                <option value="1">Monday</option>
+                                <option value="2">Tuesday</option>
+                                <option value="3">Wednesday</option>
+                                <option value="4">Thursday</option>
+                                <option value="5">Friday</option>
+                                <option value="6">Saturday</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Month Tab -->
+                <div id="month" class="tab-content">
+                    <label for="month-type">Month:</label>
+                    <select id="month-type">
+                        <option value="every">Every month</option>
+                        <option value="specific">Specific months</option>
+                        <option value="range">Between month X and month Y</option>
+                    </select>
+                    <div id="month-specific" class="option-group">
+                        <label>Select months (1-12):</label>
+                        <div class="checkbox-grid" id="month-specific-grid">
+                            <label><input type="checkbox" value="1">Jan (1)</label>
+                            <label><input type="checkbox" value="2">Feb (2)</label>
+                            <label><input type="checkbox" value="3">Mar (3)</label>
+                            <label><input type="checkbox" value="4">Apr (4)</label>
+                            <label><input type="checkbox" value="5">May (5)</label>
+                            <label><input type="checkbox" value="6">Jun (6)</label>
+                            <label><input type="checkbox" value="7">Jul (7)</label>
+                            <label><input type="checkbox" value="8">Aug (8)</label>
+                            <label><input type="checkbox" value="9">Sep (9)</label>
+                            <label><input type="checkbox" value="10">Oct (10)</label>
+                            <label><input type="checkbox" value="11">Nov (11)</label>
+                            <label><input type="checkbox" value="12">Dec (12)</label>
+                        </div>
+                    </div>
+                    <div id="month-range" class="option-group">
+                        <label for="month-range-start">Between month:</label>
+                        <select id="month-range-start">
+                            <option value="1">Jan (1)</option>
+                            <option value="2">Feb (2)</option>
+                            <option value="3">Mar (3)</option>
+                            <option value="4">Apr (4)</option>
+                            <option value="5">May (5)</option>
+                            <option value="6">Jun (6)</option>
+                            <option value="7">Jul (7)</option>
+                            <option value="8">Aug (8)</option>
+                            <option value="9">Sep (9)</option>
+                            <option value="10">Oct (10)</option>
+                            <option value="11">Nov (11)</option>
+                            <option value="12">Dec (12)</option>
+                        </select>
+                        <label for="month-range-end">And month:</label>
+                        <select id="month-range-end">
+                            <option value="1">Jan (1)</option>
+                            <option value="2">Feb (2)</option>
+                            <option value="3">Mar (3)</option>
+                            <option value="4">Apr (4)</option>
+                            <option value="5">May (5)</option>
+                            <option value="6">Jun (6)</option>
+                            <option value="7">Jul (7)</option>
+                            <option value="8">Aug (8)</option>
+                            <option value="9">Sep (9)</option>
+                            <option value="10">Oct (10)</option>
+                            <option value="11">Nov (11)</option>
+                            <option value="12" selected>Dec (12)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Year Tab -->
+                <div id="year" class="tab-content">
+                    <label for="year-type">Year:</label>
+                    <select id="year-type">
+                        <option value="every">Every year</option>
+                        <option value="specific">Specific years</option>
+                        <option value="range">Between year X and year Y</option>
+                    </select>
+                    <div id="year-specific" class="option-group">
+                        <label for="year-specific-input">Enter years (e.g., 2025,2026):</label>
+                        <input type="text" id="year-specific-input" placeholder="2025,2026">
+                        <span id="year-specific-error" class="error-message"></span>
+                    </div>
+                    <div id="year-range" class="option-group">
+                        <label for="year-range-start">Between year:</label>
+                        <select id="year-range-start">
+                            <option value="2025">2025</option>
+                            <option value="2026">2026</option>
+                            <option value="2027">2027</option>
+                            <option value="2028">2028</option>
+                            <option value="2029">2029</option>
+                            <option value="2030">2030</option>
+                        </select>
+                        <label for="year-range-end">And year:</label>
+                        <select id="year-range-end">
+                            <option value="2025">2025</option>
+                            <option value="2026">2026</option>
+                            <option value="2027">2027</option>
+                            <option value="2028">2028</option>
+                            <option value="2029">2029</option>
+                            <option value="2030" selected>2030</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Cron Expression Output -->
+                <div id="cron-expression">
+                    <h3>Cron Expression</h3>
+                    <input type="text" id="cron-output" readonly>
+                    <button id="copy-button">Copy</button>
+                </div>
+
+                <!-- Next Runs -->
+                <div id="next-runs">
+                    <h3>Next Runs</h3>
+                    <button id="calculate-button">Calculate Next Runs</button>
+                    <ul id="next-runs-list"></ul>
                 </div>
             </div>
         </div>
-
-        <!-- Month Tab -->
-        <div id="month" class="tab-content">
-            <label for="month-type">Month:</label>
-            <select id="month-type" class="update-cron-change">
-                <option value="every">Every month</option>
-                <option value="specific">Specific months</option>
-                <option value="range">Between month X and month Y</option>
-            </select>
-            <div id="month-specific" class="option-group">
-                <label>Select months (1-12):</label>
-                <div class="checkbox-grid">
-                    <label><input type="checkbox" value="1" class="update-cron-change">Jan (1)</label>
-                    <label><input type="checkbox" value="2" class="update-cron-change">Feb (2)</label>
-                    <label><input type="checkbox" value="3" class="update-cron-change">Mar (3)</label>
-                    <label><input type="checkbox" value="4" class="update-cron-change">Apr (4)</label>
-                    <label><input type="checkbox" value="5" class="update-cron-change">May (5)</label>
-                    <label><input type="checkbox" value="6" class="update-cron-change">Jun (6)</label>
-                    <label><input type="checkbox" value="7" class="update-cron-change">Jul (7)</label>
-                    <label><input type="checkbox" value="8" class="update-cron-change">Aug (8)</label>
-                    <label><input type="checkbox" value="9" class="update-cron-change">Sep (9)</label>
-                    <label><input type="checkbox" value="10" class="update-cron-change">Oct (10)</label>
-                    <label><input type="checkbox" value="11" class="update-cron-change">Nov (11)</label>
-                    <label><input type="checkbox" value="12" class="update-cron-change">Dec (12)</label>
-                </div>
-            </div>
-            <div id="month-range" class="option-group">
-                <label for="month-range-start">Between month:</label>
-                <select id="month-range-start" class="update-cron-change">
-                    <option value="1">Jan (1)</option>
-                    <option value="2">Feb (2)</option>
-                    <option value="3">Mar (3)</option>
-                    <option value="4">Apr (4)</option>
-                    <option value="5">May (5)</option>
-                    <option value="6">Jun (6)</option>
-                    <option value="7">Jul (7)</option>
-                    <option value="8">Aug (8)</option>
-                    <option value="9">Sep (9)</option>
-                    <option value="10">Oct (10)</option>
-                    <option value="11">Nov (11)</option>
-                    <option value="12">Dec (12)</option>
-                </select>
-                <label for="month-range-end">And month:</label>
-                <select id="month-range-end" class="update-cron-change">
-                    <option value="1">Jan (1)</option>
-                    <option value="2">Feb (2)</option>
-                    <option value="3">Mar (3)</option>
-                    <option value="4">Apr (4)</option>
-                    <option value="5">May (5)</option>
-                    <option value="6">Jun (6)</option>
-                    <option value="7">Jul (7)</option>
-                    <option value="8">Aug (8)</option>
-                    <option value="9">Sep (9)</option>
-                    <option value="10">Oct (10)</option>
-                    <option value="11">Nov (11)</option>
-                    <option value="12" selected>Dec (12)</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- Year Tab -->
-        <div id="year" class="tab-content">
-            <label for="year-type">Year:</label>
-            <select id="year-type" class="update-cron-change">
-                <option value="every">Every year</option>
-                <option value="specific">Specific years</option>
-                <option value="range">Between year X and year Y</option>
-            </select>
-            <div id="year-specific" class="option-group">
-                <label for="year-specific-input">Enter years (comma-separated, e.g., 2025,2026):</label>
-                <input type="text" id="year-specific-input" class="update-cron-input" placeholder="2025,2026">
-                <span id="year-specific-error" class="error-message"></span>
-            </div>
-            <div id="year-range" class="option-group">
-                <label for="year-range-start">Between year:</label>
-                <select id="year-range-start" class="update-cron-change">
-                    <option value="2025">2025</option>
-                    <option value="2026">2026</option>
-                    <option value="2027">2027</option>
-                    <option value="2028">2028</option>
-                    <option value="2029">2029</option>
-                    <option value="2030">2030</option>
-                </select>
-                <label for="year-range-end">And year:</label>
-                <select id="year-range-end" class="update-cron-change">
-                    <option value="2025">2025</option>
-                    <option value="2026">2026</option>
-                    <option value="2027">2027</option>
-                    <option value="2028">2028</option>
-                    <option value="2029">2029</option>
-                    <option value="2030" selected>2030</option>
-                </select>
-            </div>
-        </div>
-
-        <div id="cron-expression">
-            <h3>Cron Expression</h3>
-            <input type="text" id="cron-output" readonly>
-            <button id="copy-button">Copy</button>
-        </div>
-
-        <div id="next-runs">
-            <h3>Next Runs</h3>
-            <button id="calculate-button">Calculate Next Runs</button>
-            <ul id="next-runs-list">
-                <li>Click "Calculate Next Runs" to see the next run times.</li>
-            </ul>
+        <div id="footer">
+             <!-- Footer -->
         </div>
     </div>
 
     <script>
-        (function() {
-            // Cached DOM elements
-            let cachedSecondsCheckboxes = null;
-            let cachedMinutesCheckboxes = null;
-            let cachedHoursCheckboxes = null;
-            let cachedDayDomCheckboxes = null;
-            let cachedMonthCheckboxes = null;
+        // Centralized cache for checkboxes
+        const checkboxCache = {};
 
-            // Helper functions
-            function generateOptions(select, start, end, selectedValue) {
-                select.innerHTML = '';
-                for (let i = start; i <= end; i++) {
-                    const option = document.createElement('option');
-                    option.value = i;
-                    option.textContent = i;
-                    if (i === selectedValue) option.selected = true;
-                    select.appendChild(option);
-                }
+        // Arrays to store selected checkbox values
+        let selectedSeconds = [];
+        let selectedMinutes = [];
+        let selectedHours = [];
+        let selectedDaysOfMonth = [];
+        let selectedMonths = [];
+        let selectedDaysOfWeek = [];
+
+        // Generate options for select elements
+        function generateOptions(select, start, end, selectedValue) {
+            select.innerHTML = '';
+            for (let i = start; i <= end; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                if (i === selectedValue) option.selected = true;
+                select.appendChild(option);
             }
+        }
 
-            function generateCheckboxes(container, start, end) {
-                const grid = container.querySelector('.checkbox-grid');
-                grid.innerHTML = '';
-                for (let i = start; i <= end; i++) {
-                    const label = document.createElement('label');
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.value = i;
-                    checkbox.classList.add('update-cron-change');
-                    label.appendChild(checkbox);
-                    label.appendChild(document.createTextNode(i));
-                    grid.appendChild(label);
-                }
-                // Cache the checkboxes after generation
-                if (container.id === 'seconds-specific') cachedSecondsCheckboxes = grid.querySelectorAll('input[type="checkbox"]');
-                if (container.id === 'minutes-specific') cachedMinutesCheckboxes = grid.querySelectorAll('input[type="checkbox"]');
-                if (container.id === 'hours-specific') cachedHoursCheckboxes = grid.querySelectorAll('input[type="checkbox"]');
-                if (container.id === 'day-dom-specific') cachedDayDomCheckboxes = grid.querySelectorAll('input[type="checkbox"]');
+        // Generate checkboxes and cache them
+        function generateCheckboxes(containerId, start, end) {
+            const grid = document.getElementById(containerId + '-grid');
+            grid.innerHTML = '';
+            for (let i = start; i <= end; i++) {
+                const label = document.createElement('label');
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.value = i;
+                label.appendChild(checkbox);
+                label.appendChild(document.createTextNode(i));
+                grid.appendChild(label);
             }
+            checkboxCache[containerId + '-grid'] = grid.querySelectorAll('input[type="checkbox"]');
+        }
 
-            // Tab functionality
-            function openTab(tabName) {
-                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-                document.getElementById(tabName).classList.add('active');
-                document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
-                document.querySelector(`.tab-button[data-tab="${tabName}"]`).classList.add('active');
+        // Tab switching
+        function openTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
+            const tabContent = document.getElementById(tabName);
+            const tabButton = document.querySelector(`.tab-button[data-tab="${tabName}"]`);
+            if (tabContent && tabButton) {
+                tabContent.classList.add('active');
+                tabButton.classList.add('active');
             }
+        }
 
-            // Update options for each tab
-            function updateSecondsOptions() {
-                const type = document.getElementById('seconds-type').value;
-                document.getElementById('seconds-increment').style.display = type === 'increment' ? 'block' : 'none';
-                document.getElementById('seconds-specific').style.display = type === 'specific' ? 'block' : 'none';
-                document.getElementById('seconds-range').style.display = type === 'range' ? 'block' : 'none';
-                updateCron();
+        // Update option visibility
+        function updateOptions(tab, typeId, groups) {
+            const type = document.getElementById(typeId).value;
+            groups.forEach(group => {
+                const element = document.getElementById(`${tab}-${group}`);
+                element.style.display = (type === group) ? 'block' : 'none';
+            });
+            updateCron();
+        }
+
+        function updateSecondsOptions() {
+            updateOptions('seconds', 'seconds-type', ['increment', 'specific', 'range']);
+        }
+
+        function updateMinutesOptions() {
+            updateOptions('minutes', 'minutes-type', ['increment', 'specific', 'range']);
+        }
+
+        function updateHoursOptions() {
+            updateOptions('hours', 'hours-type', ['increment', 'specific', 'range']);
+        }
+
+        function updateDayOptions() {
+            const mode = document.querySelector('input[name="day-mode"]:checked').value;
+            document.getElementById('day-dayOfMonth').style.display = mode === 'dayOfMonth' ? 'block' : 'none';
+            document.getElementById('day-dayOfWeek').style.display = mode === 'dayOfWeek' ? 'block' : 'none';
+            updateDaySubOptions();
+            updateCron();
+        }
+
+        function updateDaySubOptions() {
+            const mode = document.querySelector('input[name="day-mode"]:checked').value;
+            if (mode === 'dayOfMonth') {
+                updateOptions('day-dom', 'day-dom-type', ['increment', 'specific']);
+            } else {
+                updateOptions('day-dow', 'day-dow-type', ['specific', 'nth']);
             }
+        }
 
-            function updateMinutesOptions() {
-                const type = document.getElementById('minutes-type').value;
-                document.getElementById('minutes-increment').style.display = type === 'increment' ? 'block' : 'none';
-                document.getElementById('minutes-specific').style.display = type === 'specific' ? 'block' : 'none';
-                document.getElementById('minutes-range').style.display = type === 'range' ? 'block' : 'none';
-                updateCron();
+        function updateMonthOptions() {
+            updateOptions('month', 'month-type', ['specific', 'range']);
+        }
+
+        function updateYearOptions() {
+            updateOptions('year', 'year-type', ['specific', 'range']);
+        }
+
+        // Get cron field values
+        function getFieldValue(tab, selectedValues) {
+            const type = document.getElementById(`${tab}-type`).value;
+            if (type === 'every') return '*';
+            if (type === 'increment') {
+                const start = document.getElementById(`${tab}-increment-start`).value;
+                const step = document.getElementById(`${tab}-increment-step`).value;
+                return `${start}/${step}`;
             }
-
-            function updateHoursOptions() {
-                const type = document.getElementById('hours-type').value;
-                document.getElementById('hours-increment').style.display = type === 'increment' ? 'block' : 'none';
-                document.getElementById('hours-specific').style.display = type === 'specific' ? 'block' : 'none';
-                document.getElementById('hours-range').style.display = type === 'range' ? 'block' : 'none';
-                updateCron();
+            if (type === 'specific') {
+                return selectedValues.length ? selectedValues.join(',') : (tab === 'day-dom' ? '*' : '0');
             }
-
-            function updateDayOptions() {
-                const mode = document.querySelector('input[name="day-mode"]:checked').value;
-                document.getElementById('day-dayOfMonth').style.display = mode === 'dayOfMonth' ? 'block' : 'none';
-                document.getElementById('day-dayOfWeek').style.display = mode === 'dayOfWeek' ? 'block' : 'none';
-                updateDaySubOptions();
-                updateCron();
+            if (type === 'range') {
+                const start = document.getElementById(`${tab}-range-start`).value;
+                const end = document.getElementById(`${tab}-range-end`).value;
+                return `${start}-${end}`;
             }
+            return tab === 'day-dom' ? '*' : '0';
+        }
 
-            function updateDaySubOptions() {
-                const mode = document.querySelector('input[name="day-mode"]:checked').value;
-                if (mode === 'dayOfMonth') {
-                    const type = document.getElementById('day-dom-type').value;
-                    document.getElementById('day-dom-increment').style.display = type === 'increment' ? 'block' : 'none';
-                    document.getElementById('day-dom-specific').style.display = type === 'specific' ? 'block' : 'none';
-                } else {
-                    const type = document.getElementById('day-dow-type').value;
-                    document.getElementById('day-dow-specific').style.display = type === 'specific' ? 'block' : 'none';
-                    document.getElementById('day-dow-nth').style.display = type === 'nth' ? 'block' : 'none';
-                }
+        function getSeconds() { return getFieldValue('seconds', selectedSeconds); }
+        function getMinutes() { return getFieldValue('minutes', selectedMinutes); }
+        function getHours() { return getFieldValue('hours', selectedHours); }
+
+        function getDaysOfMonth() {
+            const mode = document.querySelector('input[name="day-mode"]:checked').value;
+            if (mode === 'dayOfWeek') return '?';
+            const type = document.getElementById('day-dom-type').value;
+            if (type === 'every') return '*';
+            if (type === 'increment' || type === 'specific') return getFieldValue('day-dom', selectedDaysOfMonth);
+            if (type === 'last') return 'L';
+            if (type === 'lastWeekday') return 'LW';
+            if (type === 'weekday') return '1-5';
+            return '*';
+        }
+
+        function getDaysOfWeek() {
+            const mode = document.querySelector('input[name="day-mode"]:checked').value;
+            if (mode === 'dayOfMonth') return '?';
+            const type = document.getElementById('day-dow-type').value;
+            if (type === 'every') return '*';
+            if (type === 'specific') {
+                return selectedDaysOfWeek.length ? selectedDaysOfWeek.join(',') : '*';
             }
-
-            function updateMonthOptions() {
-                const type = document.getElementById('month-type').value;
-                document.getElementById('month-specific').style.display = type === 'specific' ? 'block' : 'none';
-                document.getElementById('month-range').style.display = type === 'range' ? 'block' : 'none';
-                updateCron();
+            if (type === 'last') return 'L';
+            if (type === 'nth') {
+                const n = document.getElementById('day-dow-nth-n').value;
+                const day = document.getElementById('day-dow-nth-day').value;
+                return `${day}#${n}`;
             }
+            return '*';
+        }
 
-            function updateYearOptions() {
-                const type = document.getElementById('year-type').value;
-                document.getElementById('year-specific').style.display = type === 'specific' ? 'block' : 'none';
-                document.getElementById('year-range').style.display = type === 'range' ? 'block' : 'none';
-                updateCron();
+        function getMonths() {
+            const type = document.getElementById('month-type').value;
+            if (type === 'every') return '*';
+            if (type === 'specific') {
+                return selectedMonths.length ? selectedMonths.join(',') : '*';
             }
-
-            // Get cron fields with caching
-            function getSeconds() {
-                if (!cachedSecondsCheckboxes) {
-                    cachedSecondsCheckboxes = document.querySelectorAll('#seconds-specific .checkbox-grid input[type="checkbox"]');
-                }
-                const type = document.getElementById('seconds-type').value;
-                if (type === 'every') return '*';
-                if (type === 'increment') {
-                    const start = document.getElementById('seconds-increment-start').value;
-                    const step = document.getElementById('seconds-increment-step').value;
-                    return `${start}/${step}`;
-                }
-                if (type === 'specific') {
-                    const selected = Array.from(cachedSecondsCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
-                    return selected.length ? selected.join(',') : '0';
-                }
-                if (type === 'range') {
-                    const start = document.getElementById('seconds-range-start').value;
-                    const end = document.getElementById('seconds-range-end').value;
-                    return `${start}-${end}`;
-                }
-                return '0';
+            if (type === 'range') {
+                const start = document.getElementById('month-range-start').value;
+                const end = document.getElementById('month-range-end').value;
+                return `${start}-${end}`;
             }
+            return '*';
+        }
 
-            function getMinutes() {
-                if (!cachedMinutesCheckboxes) {
-                    cachedMinutesCheckboxes = document.querySelectorAll('#minutes-specific .checkbox-grid input[type="checkbox"]');
-                }
-                const type = document.getElementById('minutes-type').value;
-                if (type === 'every') return '*';
-                if (type === 'increment') {
-                    const start = document.getElementById('minutes-increment-start').value;
-                    const step = document.getElementById('minutes-increment-step').value;
-                    return `${start}/${step}`;
-                }
-                if (type === 'specific') {
-                    const selected = Array.from(cachedMinutesCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
-                    return selected.length ? selected.join(',') : '0';
-                }
-                if (type === 'range') {
-                    const start = document.getElementById('minutes-range-start').value;
-                    const end = document.getElementById('minutes-range-end').value;
-                    return `${start}-${end}`;
-                }
-                return '0';
-            }
-
-            function getHours() {
-                if (!cachedHoursCheckboxes) {
-                    cachedHoursCheckboxes = document.querySelectorAll('#hours-specific .checkbox-grid input[type="checkbox"]');
-                }
-                const type = document.getElementById('hours-type').value;
-                if (type === 'every') return '*';
-                if (type === 'increment') {
-                    const start = document.getElementById('hours-increment-start').value;
-                    const step = document.getElementById('hours-increment-step').value;
-                    return `${start}/${step}`;
-                }
-                if (type === 'specific') {
-                    const selected = Array.from(cachedHoursCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
-                    return selected.length ? selected.join(',') : '0';
-                }
-                if (type === 'range') {
-                    const start = document.getElementById('hours-range-start').value;
-                    const end = document.getElementById('hours-range-end').value;
-                    return `${start}-${end}`;
-                }
-                return '0';
-            }
-
-            function getDayOfMonth() {
-                if (!cachedDayDomCheckboxes) {
-                    cachedDayDomCheckboxes = document.querySelectorAll('#day-dom-specific .checkbox-grid input[type="checkbox"]');
-                }
-                const mode = document.querySelector('input[name="day-mode"]:checked').value;
-                if (mode === 'dayOfWeek') return '?';
-                const type = document.getElementById('day-dom-type').value;
-                if (type === 'every') return '*';
-                if (type === 'increment') {
-                    const start = document.getElementById('day-dom-increment-start').value;
-                    const step = document.getElementById('day-dom-increment-step').value;
-                    return `${start}/${step}`;
-                }
-                if (type === 'specific') {
-                    const selected = Array.from(cachedDayDomCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
-                    return selected.length ? selected.join(',') : '*';
-                }
-                if (type === 'last') return 'L';
-                if (type === 'lastWeekday') return 'LW';
-                if (type === 'weekday') return '1-5';
-                return '*';
-            }
-
-            function getMonth() {
-                if (!cachedMonthCheckboxes) {
-                    cachedMonthCheckboxes = document.querySelectorAll('#month-specific .checkbox-grid input[type="checkbox"]');
-                }
-                const type = document.getElementById('month-type').value;
-                if (type === 'every') return '*';
-                if (type === 'specific') {
-                    const selected = Array.from(cachedMonthCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
-                    return selected.length ? selected.join(',') : '*';
-                }
-                if (type === 'range') {
-                    const start = document.getElementById('month-range-start').value;
-                    const end = document.getElementById('month-range-end').value;
-                    return `${start}-${end}`;
-                }
-                return '*';
-            }
-
-            function getDayOfWeek() {
-                const mode = document.querySelector('input[name="day-mode"]:checked').value;
-                if (mode === 'dayOfMonth') return '?';
-                const type = document.getElementById('day-dow-type').value;
-                if (type === 'every') return '*';
-                if (type === 'specific') {
-                    const checkboxes = document.querySelectorAll('#day-dow-specific .checkbox-grid input[type="checkbox"]:checked');
-                    const selected = Array.from(checkboxes).map(cb => cb.value);
-                    return selected.length ? selected.join(',') : '*';
-                }
-                if (type === 'last') return 'L';
-                if (type === 'nth') {
-                    const n = document.getElementById('day-dow-nth-n').value;
-                    const day = document.getElementById('day-dow-nth-day').value;
-                    return `${day}#${n}`;
-                }
-                return '*';
-            }
-
-            function getYear() {
-                const type = document.getElementById('year-type').value;
-                const errorElement = document.getElementById('year-specific-error');
-                if (type === 'every') {
-                    errorElement.style.display = 'none';
+        function getYear() {
+            const type = document.getElementById('year-type').value;
+            const errorElement = document.getElementById('year-specific-error');
+            errorElement.style.display = 'none';
+            if (type === 'every') return '*';
+            if (type === 'specific') {
+                const input = document.getElementById('year-specific-input').value.trim();
+                if (!input) return '*';
+                const years = input.split(',').map(y => y.trim()).filter(y => y);
+                const validYears = years.filter(y => {
+                    const num = Number(y);
+                    return !isNaN(num) && Number.isInteger(num) && num >= 1970 && num <= 2099;
+                });
+                if (validYears.length !== years.length) {
+                    errorElement.textContent = 'Invalid years (1970-2099, e.g., 2025,2026)';
+                    errorElement.style.display = 'block';
                     return '*';
                 }
-                if (type === 'specific') {
-                    const input = document.getElementById('year-specific-input').value.trim();
-                    if (!input) {
-                        errorElement.style.display = 'none';
-                        return '*';
-                    }
-                    const years = input.split(',').map(y => y.trim());
-                    const validYears = years.filter(y => {
-                        const num = Number(y);
-                        return /^\d+$/.test(y) && num >= 1970 && num <= 2099;
-                    });
-                    if (validYears.length !== years.length || validYears.length === 0) {
-                        errorElement.textContent = 'Invalid years. Enter comma-separated numbers between 1970 and 2099 (e.g., 2025,2026).';
-                        errorElement.style.display = 'block';
-                        return '*';
-                    }
-                    errorElement.style.display = 'none';
-                    return validYears.join(',');
-                }
-                if (type === 'range') {
-                    errorElement.style.display = 'none';
-                    const start = document.getElementById('year-range-start').value;
-                    const end = document.getElementById('year-range-end').value;
-                    return `${start}-${end}`;
-                }
-                errorElement.style.display = 'none';
-                return '*';
+                return validYears.join(',');
             }
+            if (type === 'range') {
+                const start = document.getElementById('year-range-start').value;
+                const end = document.getElementById('year-range-end').value;
+                return `${start}-${end}`;
+            }
+            return '*';
+        }
 
-            function updateCron() {
+        // Update cron expression with debouncing
+        let debounceTimer;
+        function updateCron() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
                 const cron = [
                     getSeconds(),
                     getMinutes(),
                     getHours(),
-                    getDayOfMonth(),
-                    getMonth(),
-                    getDayOfWeek(),
+                    getDaysOfMonth(),
+                    getMonths(),
+                    getDaysOfWeek(),
                     getYear()
                 ].join(' ');
                 document.getElementById('cron-output').value = cron;
-            }
+            }, 300);
+        }
 
-            // Copy functionality
-            document.getElementById('copy-button').addEventListener('click', () => {
-                const cronOutput = document.getElementById('cron-output');
+        // Copy to clipboard
+        document.getElementById('copy-button').addEventListener('click', () => {
+            const cronOutput = document.getElementById('cron-output');
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(cronOutput.value)
+                    .then(() => alert('Cron expression copied to clipboard!'))
+                    .catch(() => alert('Failed to copy cron expression.'));
+            } else {
                 cronOutput.select();
                 document.execCommand('copy');
-            });
-
-            // Calculate next runs (simple simulation)
-            document.getElementById('calculate-button').addEventListener('click', () => {
-                const cron = document.getElementById('cron-output').value;
-                const list = document.getElementById('next-runs-list');
-                list.innerHTML = '';
-                const now = new Date();
-                for (let i = 0; i < 5; i++) {
-                    const next = new Date(now.getTime() + (i + 1) * 60000); // Simple increment by minute
-                    const li = document.createElement('li');
-                    li.textContent = next.toLocaleString();
-                    list.appendChild(li);
-                }
-            });
-
-            // Initialization
-            function init() {
-                // Generate options for selects
-                generateOptions(document.getElementById('seconds-range-start'), 0, 59, 0);
-                generateOptions(document.getElementById('seconds-range-end'), 0, 59, 59);
-                generateOptions(document.getElementById('minutes-range-start'), 0, 59, 0);
-                generateOptions(document.getElementById('minutes-range-end'), 0, 59, 59);
-                generateOptions(document.getElementById('hours-range-start'), 0, 23, 0);
-                generateOptions(document.getElementById('hours-range-end'), 0, 23, 23);
-                generateOptions(document.getElementById('day-dom-increment-start'), 1, 31, 1);
-
-                // Generate checkboxes
-                generateCheckboxes(document.getElementById('seconds-specific'), 0, 59);
-                generateCheckboxes(document.getElementById('minutes-specific'), 0, 59);
-                generateCheckboxes(document.getElementById('hours-specific'), 0, 23);
-                generateCheckboxes(document.getElementById('day-dom-specific'), 1, 31);
-
-                // Attach event listeners
-                document.querySelectorAll('.tab-button').forEach(button => {
-                    button.addEventListener('click', () => openTab(button.dataset.tab));
-                });
-
-                document.getElementById('seconds-type').addEventListener('change', updateSecondsOptions);
-                document.getElementById('minutes-type').addEventListener('change', updateMinutesOptions);
-                document.getElementById('hours-type').addEventListener('change', updateHoursOptions);
-                document.getElementById('day-dom-type').addEventListener('change', updateDaySubOptions);
-                document.getElementById('day-dow-type').addEventListener('change', updateDaySubOptions);
-                document.getElementById('month-type').addEventListener('change', updateMonthOptions);
-                document.getElementById('year-type').addEventListener('change', updateYearOptions);
-                document.querySelectorAll('input[name="day-mode"]').forEach(radio => {
-                    radio.addEventListener('change', updateDayOptions);
-                });
-                document.querySelectorAll('.update-cron-change').forEach(element => {
-                    element.addEventListener('change', updateCron);
-                });
-                document.querySelectorAll('.update-cron-input').forEach(element => {
-                    element.addEventListener('input', updateCron);
-                });
-
-                // Initial setup
-                updateSecondsOptions();
-                updateMinutesOptions();
-                updateHoursOptions();
-                updateDayOptions();
-                updateMonthOptions();
-                updateYearOptions();
-                updateCron();
+                alert('Cron expression copied to clipboard!');
             }
+        });
 
-            init();
-        })();
+        // Simulate next runs
+        document.getElementById('calculate-button').addEventListener('click', () => {
+            const list = document.getElementById('next-runs-list');
+            list.innerHTML = '';
+            const now = new Date();
+            for (let i = 0; i < 5; i++) {
+                const next = new Date(now.getTime() + (i + 1) * 60000);
+                const li = document.createElement('li');
+                li.textContent = next.toLocaleString();
+                list.appendChild(li);
+            }
+        });
+
+        // Initialization
+        function init() {
+            // Populate select options
+            generateOptions(document.getElementById('seconds-increment-start'), 0, 59, 0);
+            generateOptions(document.getElementById('seconds-range-start'), 0, 59, 0);
+            generateOptions(document.getElementById('seconds-range-end'), 1, 59, 59);
+            generateOptions(document.getElementById('minutes-increment-start'), 0, 59, 0);
+            generateOptions(document.getElementById('minutes-range-start'), 0, 59, 0);
+            generateOptions(document.getElementById('minutes-range-end'), 1, 59, 59);
+            generateOptions(document.getElementById('hours-increment-start'), 0, 23, 0);
+            generateOptions(document.getElementById('hours-range-start'), 0, 23, 0);
+            generateOptions(document.getElementById('hours-range-end'), 1, 23, 23);
+            generateOptions(document.getElementById('day-dom-increment-start'), 1, 31, 1);
+
+            // Generate checkboxes
+            generateCheckboxes('seconds-specific', 0, 59);
+            generateCheckboxes('minutes-specific', 0, 59);
+            generateCheckboxes('hours-specific', 0, 23);
+            generateCheckboxes('day-dom-specific', 1, 31);
+
+            // Add change listeners for checkboxes
+            checkboxCache['seconds-specific-grid'].forEach(cb => {
+                cb.addEventListener('change', () => {
+                    selectedSeconds = Array.from(checkboxCache['seconds-specific-grid'])
+                        .filter(cb => cb.checked)
+                        .map(cb => cb.value);
+                    updateCron();
+                });
+            });
+            checkboxCache['minutes-specific-grid'].forEach(cb => {
+                cb.addEventListener('change', () => {
+                    selectedMinutes = Array.from(checkboxCache['minutes-specific-grid'])
+                        .filter(cb => cb.checked)
+                        .map(cb => cb.value);
+                    updateCron();
+                });
+            });
+            checkboxCache['hours-specific-grid'].forEach(cb => {
+                cb.addEventListener('change', () => {
+                    selectedHours = Array.from(checkboxCache['hours-specific-grid'])
+                        .filter(cb => cb.checked)
+                        .map(cb => cb.value);
+                    updateCron();
+                });
+            });
+            checkboxCache['day-dom-specific-grid'].forEach(cb => {
+                cb.addEventListener('change', () => {
+                    selectedDaysOfMonth = Array.from(checkboxCache['day-dom-specific-grid'])
+                        .filter(cb => cb.checked)
+                        .map(cb => cb.value);
+                    updateCron();
+                });
+            });
+            document.querySelectorAll('#month-specific-grid input[type="checkbox"]').forEach(cb => {
+                cb.addEventListener('change', () => {
+                    selectedMonths = Array.from(document.querySelectorAll('#month-specific-grid input[type="checkbox"]'))
+                        .filter(cb => cb.checked)
+                        .map(cb => cb.value);
+                    updateCron();
+                });
+            });
+            document.querySelectorAll('#day-dow-specific-grid input[type="checkbox"]').forEach(cb => {
+                cb.addEventListener('change', () => {
+                    selectedDaysOfWeek = Array.from(document.querySelectorAll('#day-dow-specific-grid input[type="checkbox"]'))
+                        .filter(cb => cb.checked)
+                        .map(cb => cb.value);
+                    updateCron();
+                });
+            });
+
+            // Event listeners for tab buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabName = button.getAttribute('data-tab');
+                    openTab(tabName);
+                });
+            });
+
+            // Event listeners for option changes
+            document.getElementById('seconds-type').addEventListener('change', updateSecondsOptions);
+            document.getElementById('minutes-type').addEventListener('change', updateMinutesOptions);
+            document.getElementById('hours-type').addEventListener('change', updateHoursOptions);
+            document.getElementById('day-dom-type').addEventListener('change', updateDaySubOptions);
+            document.getElementById('day-dow-type').addEventListener('change', updateDaySubOptions);
+            document.getElementById('month-type').addEventListener('change', updateMonthOptions);
+            document.getElementById('year-type').addEventListener('change', updateYearOptions);
+            document.querySelectorAll('input[name="day-mode"]').forEach(radio => {
+                radio.addEventListener('change', updateDayOptions);
+            });
+
+            // Add change listeners for select elements
+            document.querySelectorAll('select').forEach(select => {
+                select.addEventListener('change', updateCron);
+            });
+
+            // Add input listener for year-specific input
+            document.getElementById('year-specific-input').addEventListener('input', updateCron);
+
+            // Initial setup
+            updateSecondsOptions();
+            updateMinutesOptions();
+            updateHoursOptions();
+            updateDayOptions();
+            updateMonthOptions();
+            updateYearOptions();
+            updateCron();
+        }
+
+        // Run initialization
+        init();
     </script>
 </body>
 </html>
