@@ -333,10 +333,10 @@
                             <option value="every">Every day</option>
                             <option value="increment">Every X days starting at day Y</option>
                             <option value="specific">Specific days</option>
-                            <option value="last">Last day of month</option>
-                            <option value="lastWeekday">Last weekday of month</option>
-                            <option value="secondLast">Second to last day of month</option>
-                            <option value="nearestWeekday">Nearest weekday to day X</option>
+                            <option value="last" class="quartz-only">Last day of month</option>
+                            <option value="lastWeekday" class="quartz-only">Last weekday of month</option>
+                            <option value="secondLast" class="quartz-only">Second to last day of month</option>
+                            <option value="nearestWeekday" class="quartz-only">Nearest weekday to day X</option>
                             <option value="weekday">Every weekday</option>
                         </select>
                         <div id="day-dom-increment" class="option-group">
@@ -368,8 +368,8 @@
                             <option value="every">Every day</option>
                             <option value="specific">Specific days</option>
                             <option value="weekday">Every weekday</option>
-                            <option value="last">Last [day] of month</option>
-                            <option value="nth">Nth [day] of month</option>
+                            <option value="last" class="quartz-only">Last [day] of month</option>
+                            <option value="nth" class="quartz-only">Nth [day] of month</option>
                         </select>
                         <div id="day-dow-specific" class="option-group">
                             <label>Select days (0-6, 0=Sunday):</label>
@@ -614,15 +614,52 @@
             const mode = document.querySelector('input[name="day-mode"]:checked').value;
             document.getElementById('day-dayOfMonth').style.display = mode === 'dayOfMonth' ? 'block' : 'none';
             document.getElementById('day-dayOfWeek').style.display = mode === 'dayOfWeek' ? 'block' : 'none';
+            updateDayTypeSelects();
             updateDaySubOptions();
+        }
+
+        function updateDayTypeSelects() {
+            const dayDomSelect = document.getElementById('day-dom-type');
+            const dayDowSelect = document.getElementById('day-dow-type');
+            const isQuartz = currentMode === 'quartz';
+
+            // Update Day of Month options
+            dayDomSelect.querySelectorAll('option').forEach(option => {
+                if (option.classList.contains('quartz-only')) {
+                    option.style.display = isQuartz ? 'block' : 'none';
+                }
+            });
+            if (!isQuartz && dayDomSelect.value in { last: 1, lastWeekday: 1, secondLast: 1, nearestWeekday: 1 }) {
+                dayDomSelect.value = 'every';
+            }
+
+            // Update Day of Week options
+            dayDowSelect.querySelectorAll('option').forEach(option => {
+                if (option.classList.contains('quartz-only')) {
+                    option.style.display = isQuartz ? 'block' : 'none';
+                }
+            });
+            if (!isQuartz && dayDowSelect.value in { last: 1, nth: 1 }) {
+                dayDowSelect.value = 'every';
+            }
         }
 
         function updateDaySubOptions() {
             const mode = document.querySelector('input[name="day-mode"]:checked').value;
             if (mode === 'dayOfMonth') {
-                updateOptions('day-dom', 'day-dom-type', ['increment', 'specific', 'nearestWeekday']);
+                const type = document.getElementById('day-dom-type').value;
+                const groups = ['increment', 'specific'];
+                if (currentMode === 'quartz') {
+                    groups.push('nearestWeekday');
+                }
+                updateOptions('day-dom', 'day-dom-type', groups);
             } else {
-                updateOptions('day-dow', 'day-dow-type', ['specific', 'last', 'nth']);
+                const type = document.getElementById('day-dow-type').value;
+                const groups = ['specific'];
+                if (currentMode === 'quartz') {
+                    groups.push('last', 'nth');
+                }
+                updateOptions('day-dow', 'day-dow-type', groups);
             }
         }
 
@@ -748,6 +785,7 @@
                 const end = document.getElementById(`${tab}-range-end`).value;
                 return `${start}-${end}`;
             }
+            if (type === 'weekday') return currentMode === 'linux' ? '1-5' : 'MON-FRI';
             return defaultValue;
         }
 
@@ -770,14 +808,14 @@
             const type = document.getElementById('day-dom-type').value;
             if (type === 'every') return '*';
             if (type === 'increment' || type === 'specific') return getFieldValue('day-dom', selectedDaysOfMonth);
-            if (type === 'last') return currentMode === 'linux' ? '*' : 'L';
-            if (type === 'lastWeekday') return currentMode === 'linux' ? '*' : 'LW';
-            if (type === 'secondLast') return currentMode === 'linux' ? '*' : 'L-1';
+            if (currentMode === 'linux') return '*';
+            if (type === 'last') return 'L';
+            if (type === 'lastWeekday') return 'LW';
+            if (type === 'secondLast') return 'L-1';
             if (type === 'nearestWeekday') {
                 const day = document.getElementById('day-dom-nearestWeekday-day').value;
-                return currentMode === 'linux' ? '*' : `${day}W`;
+                return `${day}W`;
             }
-            if (type === 'weekday') return currentMode === 'linux' ? '1-5' : 'MON-FRI';
             return '*';
         }
 
@@ -789,16 +827,16 @@
             if (type === 'specific') {
                 return selectedDaysOfWeek.length ?
                     (currentMode === 'linux' ?
-                        selectedDaysOfWeek.map(d => (parseInt(d) + 1) % 7).join(',') :
+                        selectedDaysOfWeek.join(',') :
                         selectedDaysOfWeek.join(',')) : '*';
             }
             if (type === 'weekday') return currentMode === 'linux' ? '1-5' : 'MON-FRI';
+            if (currentMode === 'linux') return '*';
             if (type === 'last') {
                 const day = document.getElementById('day-dow-last-day').value;
-                return currentMode === 'linux' ? '*' : `${day}L`;
+                return `${day}L`;
             }
             if (type === 'nth') {
-                if (currentMode === 'linux') return '*';
                 const n = document.getElementById('day-dow-nth-n').value;
                 const day = document.getElementById('day-dow-nth-day').value;
                 return `${day}#${n}`;
